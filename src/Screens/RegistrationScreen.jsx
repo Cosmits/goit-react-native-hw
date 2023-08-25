@@ -1,7 +1,7 @@
-import { ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import imageBG from '../../assets/Photo_BG.jpg'
-import { useState } from 'react';
-import { AntDesign } from "@expo/vector-icons";
+  import { ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+  import imageBG from '../../assets/Photo_BG.jpg'
+  import { useState } from 'react';
+  import { AntDesign } from "@expo/vector-icons";
 
 export default RegistrationScreen = () => {
 
@@ -11,7 +11,7 @@ export default RegistrationScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleRegister = () => {
-    console.log({
+    console.log("Register:", {
       login: login,
       email: email,
       password: password,
