@@ -15,10 +15,7 @@ export default RegistrationScreen = () => {
   const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
-
-  const [isFocusInputLogin, setIsFocusInputLogin] = useState(false);
-  const [isFocusInputEmail, setIsFocusInputEmail] = useState(false);
-  const [isFocusInputPassword, setIsFocusInputPassword] = useState(false);
+  const [focusedInput, setFocusedInput] = useState(null);
 
   const handleRegister = () => {
     console.log("Register:", {
@@ -37,16 +34,16 @@ export default RegistrationScreen = () => {
 
   return (
 
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1, }} >
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.flexContainer} >
 
-      <View style={styles.container}>
+      <View style={{ ...styles.container, ...styles.flexContainer }}>
         <ImageBackground style={styles.bgImage} source={imageBG} >
 
-          <KeyboardAvoidingView style={{ flex: 1, }}
+          <KeyboardAvoidingView style={styles.flexContainer}
             behavior={Platform.OS == "ios" ? "padding" : "height"}
             keyboardVerticalOffset={-100}>
 
-            <View style={styles.wrapContainer}>
+            <View style={{ ...styles.wrapContainer, ...styles.flexContainer }}>
 
               <View style={{ ...styles.boxAuth, }}>
                 {/* paddingBottom: (isFocusInputLogin || isFocusInputEmail || isFocusInputPassword) ? -78 : 78  */}
@@ -64,19 +61,19 @@ export default RegistrationScreen = () => {
 
                 <View style={styles.inputContainer}>
 
-                  <TextInput style={[styles.inputData,
-                  isFocusInputLogin && styles.isFocus]}
-                    onFocus={() => { setIsFocusInputLogin(true) }}
-                    onBlur={() => { setIsFocusInputLogin(false) }}
+                  <TextInput
+                    style={[styles.inputData, focusedInput === "login" && styles.isFocus]}
+                    onFocus={() => setFocusedInput("login")}
+                    onBlur={() => setFocusedInput(null)}
                     value={login}
                     onChangeText={setLogin}
                     placeholder="Логін"
                   ></TextInput>
 
-                  <TextInput style={[styles.inputData,
-                  isFocusInputEmail && styles.isFocus]}
-                    onFocus={() => { setIsFocusInputEmail(true) }}
-                    onBlur={() => { setIsFocusInputEmail(false) }}
+                  <TextInput
+                    style={[styles.inputData, focusedInput === "email" && styles.isFocus]}
+                    onFocus={() => setFocusedInput("email")}
+                    onBlur={() => setFocusedInput(null)}
                     value={email}
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -85,10 +82,11 @@ export default RegistrationScreen = () => {
                   ></TextInput>
 
                   <View style={styles.divPassword}>
-                    <TextInput style={[styles.inputData,
-                    isFocusInputPassword && styles.isFocus]}
-                      onFocus={() => { setIsFocusInputPassword(true) }}
-                      onBlur={() => { setIsFocusInputPassword(false) }}
+                    <TextInput
+                      style={[styles.inputData,
+                      focusedInput === "password" && styles.isFocus]}
+                      onFocus={() => setFocusedInput("password")}
+                      onBlur={() => setFocusedInput(null)}
                       autoCompleteType="password"
                       autoCorrect={false}
                       value={password}
@@ -130,8 +128,12 @@ export default RegistrationScreen = () => {
 }
 
 const styles = StyleSheet.create({
-  container: {
+
+  flexContainer: {
     flex: 1,
+  },
+
+  container: {
     position: "relative",
     fontFamily: 'Roboto-Bold',
   },
@@ -143,7 +145,6 @@ const styles = StyleSheet.create({
   },
 
   wrapContainer: {
-    flex: 1,
     justifyContent: "flex-end",
     // marginBottom: 45,
   },

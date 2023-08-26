@@ -13,9 +13,7 @@ export default LoginScreen = () => {
   const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
-
-  const [isFocusInputEmail, setIsFocusInputEmail] = useState(false);
-  const [isFocusInputPassword, setIsFocusInputPassword] = useState(false);
+  const [focusedInput, setFocusedInput] = useState(null);
 
   const handleLogin = () => {
     console.log("Login:", {
@@ -31,16 +29,16 @@ export default LoginScreen = () => {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ flex: 1, }} >
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.flexContainer} >
 
-      <View style={styles.container}>
+      <View style={{ ...styles.container, ...styles.flexContainer }}>
         <ImageBackground style={styles.bgImage} source={imageBG} >
 
-          <KeyboardAvoidingView style={{ flex: 1, }}
-            behavior={Platform.OS == "ios" ? "padding" : "height"} 
+          <KeyboardAvoidingView style={styles.flexContainer}
+            behavior={Platform.OS == "ios" ? "padding" : "height"}
             keyboardVerticalOffset={-240}>
 
-            <View style={styles.wrapContainer}>
+            <View style={{ ...styles.wrapContainer, ...styles.flexContainer }}>
 
               <View style={styles.boxAuth}>
 
@@ -48,20 +46,21 @@ export default LoginScreen = () => {
 
                 <View style={styles.inputContainer}>
 
-                  <TextInput style={[styles.inputData,
-                  isFocusInputEmail && styles.isFocus]}
-                    onFocus={() => { setIsFocusInputEmail(true) }}
-                    onBlur={() => { setIsFocusInputEmail(false) }}
+                  <TextInput
+                    style={[styles.inputData, focusedInput === "email" && styles.isFocus]}
+                    onFocus={() => setFocusedInput("email")}
+                    onBlur={() => setFocusedInput(null)}
                     value={email}
                     onChangeText={setEmail}
                     placeholder="Адреса електронної пошти"
                   ></TextInput>
 
                   <View style={styles.divPassword}>
-                    <TextInput style={[styles.inputData,
-                    isFocusInputPassword && styles.isFocus]}
-                      onFocus={() => { setIsFocusInputPassword(true) }}
-                      onBlur={() => { setIsFocusInputPassword(false) }}
+                    <TextInput
+                      style={[styles.inputData,
+                      focusedInput === "password" && styles.isFocus]}
+                      onFocus={() => setFocusedInput("password")}
+                      onBlur={() => setFocusedInput(null)}
                       autoCompleteType="password"
                       autoCorrect={false}
                       value={password}
@@ -106,8 +105,12 @@ export default LoginScreen = () => {
 }
 
 const styles = StyleSheet.create({
-  container: {
+
+  flexContainer: {
     flex: 1,
+  },
+
+  container: {
     position: "relative",
     fontFamily: 'Roboto-Bold',
   },
@@ -119,7 +122,6 @@ const styles = StyleSheet.create({
   },
 
   wrapContainer: {
-    flex: 1,
     justifyContent: "flex-end",
   },
 
