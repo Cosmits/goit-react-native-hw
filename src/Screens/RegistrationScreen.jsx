@@ -4,9 +4,10 @@ import {
   Text, TextInput, TouchableOpacity,
   TouchableWithoutFeedback, View
 } from 'react-native';
-import imageBG from '../../assets/Photo_BG.jpg'
+import imageBG from '../images/Photo_BG.jpg'
 import { useState } from 'react';
 import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from '@react-navigation/native';
 
 export default RegistrationScreen = () => {
 
@@ -17,6 +18,8 @@ export default RegistrationScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
 
+  const navigation = useNavigation();
+
   const handleRegister = () => {
     console.log("Register:", {
       login: login,
@@ -26,11 +29,10 @@ export default RegistrationScreen = () => {
     setLogin("");
     setEmail("");
     setPassword("");
+
+    navigation.navigate("Home");
   };
 
-  const handleLogin = () => {
-    console.log('Go to page Login');
-  }
 
   return (
 
@@ -113,7 +115,7 @@ export default RegistrationScreen = () => {
 
                 <TouchableOpacity
                   style={styles.btnLogin}
-                  onPress={handleLogin}
+                  onPress={() => navigation.navigate("LoginScreen")}
                 >
                   <Text style={styles.btnLoginText}>Вже є аккаунт? Увійти</Text>
                 </TouchableOpacity>

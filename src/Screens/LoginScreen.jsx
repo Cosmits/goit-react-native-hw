@@ -4,8 +4,10 @@ import {
   StyleSheet, Text, TextInput,
   TouchableOpacity, TouchableWithoutFeedback
 } from 'react-native';
-import imageBG from '../../assets/Photo_BG.jpg'
+import imageBG from '../images/Photo_BG.jpg'
 import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default LoginScreen = () => {
 
@@ -15,6 +17,8 @@ export default LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
 
+  const navigation = useNavigation();
+
   const handleLogin = () => {
     console.log("Login:", {
       email: email,
@@ -22,14 +26,14 @@ export default LoginScreen = () => {
     });
     setEmail("");
     setPassword("");
+    
+    navigation.navigate("Home");
   };
 
-  const handleRegister = () => {
-    console.log('Go to page Register');
-  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.flexContainer} >
+
 
       <View style={{ ...styles.container, ...styles.flexContainer }}>
         <ImageBackground style={styles.bgImage} source={imageBG} >
@@ -80,14 +84,14 @@ export default LoginScreen = () => {
                 </View>
 
                 <TouchableOpacity style={styles.btnRegister}
-                  onPress={handleRegister}
+                  onPress={handleLogin}
                 >
                   <Text style={styles.btnRegisterText}>Увійти</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   style={styles.btnLogin}
-                  onPress={handleLogin}
+                  onPress={() => navigation.navigate("RegistrationScreen")}
                 >
                   <Text style={styles.btnLoginText}>Немає аккаунту? Зареєструватися</Text>
                 </TouchableOpacity>
