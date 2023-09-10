@@ -1,11 +1,11 @@
-import { View, Text } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import PostsScreen from "./PostsScreen";
-import ProfileScreen from "./ProfileScreen";
-import CreatePostsScreen from "./CreatePostsScreen";
-import HeaderTittle from "../components/HeaderTittle";
-import HeaderIconBtnBack from "../components/HeaderIconBtnBack";
+import { View, Text } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Feather, Ionicons } from '@expo/vector-icons';
+import PostsScreen from './PostsScreen';
+import ProfileScreen from './ProfileScreen';
+import CreatePostsScreen from './CreatePostsScreen';
+import HeaderTittle from '../components/HeaderTittle';
+import HeaderIconBtnBack from '../components/HeaderIconBtnBack';
 
 
 const Tabs = createBottomTabNavigator();
@@ -17,15 +17,15 @@ export default Home = () => {
         tabBarIcon: ({ focused, color }) => {
           let iconName;
 
-          if (route.name === "ProfileScreen") {
-            iconName = focused ? "user" : "user";
+          if (route.name === 'ProfileScreen') {
+            iconName = focused ? 'user' : 'user';
             return <Feather name={iconName} size={24} color={color} />;
-          } else if (route.name === "PostsScreen") {
-            iconName = focused ? "grid" : "grid-outline";
+          } else if (route.name === 'PostsScreen') {
+            iconName = focused ? 'grid' : 'grid-outline';
             return <Ionicons name={iconName} size={24} color={color} />;
-          } else if (route.name === "CreatePostsScreen") {
-            // iconName = focused ? "plus" : "plus";
-            color = focused ? "#212121CC" : "#FFFFFF";
+          } else if (route.name === 'CreatePostsScreen') {
+            // iconName = focused ? 'plus' : 'plus';
+            color = focused ? '#212121CC' : '#FFFFFF';
             return (
               <View
                 style={{
@@ -37,13 +37,13 @@ export default Home = () => {
                   borderRadius: 20,
                 }}
               >
-                <Feather name={"plus"} size={24} color={color} />
+                <Feather name={'plus'} size={24} color={color} />
               </View>
             )
           }
         },
-        tabBarActiveTintColor: "#FF6C00",
-        tabBarInactiveTintColor: "#212121CC",
+        tabBarActiveTintColor: '#FF6C00',
+        tabBarInactiveTintColor: '#212121CC',
       
         headerRightContainerStyle: { paddingRight: 16, paddingBottom: 9 },
         headerLeftContainerStyle: { paddingLeft: 16, paddingBottom: 9 },
@@ -51,22 +51,22 @@ export default Home = () => {
         tabBarShowLabel: false,
       })}
     >
-      <Tabs.Screen name="PostsScreen" component={PostsScreen}
+      <Tabs.Screen name='PostsScreen' component={PostsScreen}
         options={{
           headerShown: true,
-          headerTitleAlign: "center",
-          headerTitle: () => <HeaderTittle Tittle={"Публікації"} />,
+          headerTitleAlign: 'center',
+          headerTitle: () => <HeaderTittle Tittle={'Публікації'} />,
           headerRight: () => <HeaderIconBtnLogout />,
         }} />
-      <Tabs.Screen name="CreatePostsScreen" component={CreatePostsScreen}
+      <Tabs.Screen name='CreatePostsScreen' component={CreatePostsScreen}
         options={{
           headerShown: true,
           tabBarStyle: { display: 'none' },
-          headerTitleAlign: "center",
+          headerTitleAlign: 'center',
           headerLeft: () => <HeaderIconBtnBack />,
-          headerTitle: () => <HeaderTittle Tittle={"Створити публікацію"} />,
+          headerTitle: () => <HeaderTittle Tittle={'Створити публікацію'} />,
         }} />
-      <Tabs.Screen name="ProfileScreen" component={ProfileScreen}
+      <Tabs.Screen name='ProfileScreen' component={ProfileScreen}
         options={{
           headerShown: false,
         }} />

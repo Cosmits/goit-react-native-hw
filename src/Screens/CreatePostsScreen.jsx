@@ -1,36 +1,41 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
-  Image, View,
+  ImageBackground, View,
   Keyboard, KeyboardAvoidingView,
   StyleSheet, Text, TextInput,
   TouchableOpacity, TouchableWithoutFeedback, Dimensions
 } from 'react-native';
-import { Camera } from "expo-camera";
-import * as MediaLibrary from "expo-media-library";
+import { Camera } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
 // import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { FontAwesome, EvilIcons, Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Feather } from '@expo/vector-icons';
 
 export default CreatePostsScreen = () => {
-  
-  // Використання хука useNavigation для навігації між екранами
+
   const navigation = useNavigation();
 
-  // Створення станів за допомогою useState хука
-  const [postPhoto, setPostPhoto] = useState(null); // Збереження URL фотографії для публікації
-  const [photoName, setPhotoName] = useState(''); // Збереження назви фотографії
-  const [photoLocationName, setPhotoLocationName] = useState(''); // Збереження місцевості фотографії
-  const [hasPermission, setHasPermission] = useState(null); // Дозвіл на використання камери
-  const [currentGeoLocation, setCurrentGeoLocation] = useState({}); // Поточна геолокація
-  const cameraRef = useRef(null); // Посилання на об'єкт камери
+  const [focusedInput, setFocusedInput] = useState(null);
 
-  // Використання useEffect хука для отримання поточної геолокації
+  const [postPhoto, setPostPhoto] = useState(null); 
+  const [photoName, setPhotoName] = useState(''); 
+  const [typeCamera, setTypeCamera] = useState(Camera.Constants.Type.back); 
+  const [flashCamera, setFlashCamera] = useState(Camera.Constants.FlashMode.off); 
+  const [hasPermission, setHasPermission] = useState(null); 
+  const cameraRef = useRef(null); 
+
+  const [photoLocationName, setPhotoLocationName] = useState(''); 
+  const [currentGeoLocation, setCurrentGeoLocation] = useState({});
+
+
+
+  // =================================================================
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        console.log('У доступі до місцезнаходження відмовлено');
+        console.log('No access to Location');
       }
 
       let location = await Location.getCurrentPositionAsync({});
@@ -42,32 +47,38 @@ export default CreatePostsScreen = () => {
     })();
   }, []);
 
-  // Використання useEffect хука для отримання дозволу на використання камери
+  // =================================================================
   useEffect(() => {
     (async () => {
+      MediaLibrary.requestPermissionsAsync();
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
     })();
+
+
+    return () => {
+      cameraRef.current = null;
+      console.log('Unmounting phase: same when componentWillUnmount runs');
+    };
   }, []);
 
-  // Функція для зйомки фотографії за допомогою камери
+  if (!hasPermission) {
+    return <Text>No access to camera!</Text>;
+  }
+
+  // =================================================================
   const makePhoto = async () => {
-    if (cameraRef.current) {
-      const { uri } = await cameraRef.current.takePictureAsync();
-      setPostPhoto(uri);
+    if (cameraRef) {
+      try {
+        const { uri } = await cameraRef.current.takePictureAsync();
+        setPostPhoto(uri);
+      } catch (error) {
+        console.log('No access to Camera:', error)
+      }
     }
   };
 
-  // Умовна конструкція для відображення компонентів залежно від наявності дозволу на використання камери
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>Немає доступу до камери</Text>;
-  }
-
-  // Функція для очищення даних після створення публікації
-  const clearData = () => {
+  const clearForm = () => {
     setPostPhoto(null);
     setPhotoName('');
     setPhotoLocationName('');
@@ -85,7 +96,6 @@ export default CreatePostsScreen = () => {
     // if (!result.cancelled) setPostPhoto(result.assets[0].uri);
   };
 
-  // Функція для обробки натискання кнопки "Опубліковати"
   const handleSubmit = () => {
     const data = {
       img: postPhoto,
@@ -95,106 +105,119 @@ export default CreatePostsScreen = () => {
       locationName: photoLocationName,
       geoLocation: currentGeoLocation,
     };
-    posts.unshift(data); // Додавання нової публікації до списку постів
-    clearData(); // Очищення даних після створення публікації
-    navigation.navigate('PostsScreen'); // Перехід на екран постів
+    // posts.unshift(data); 
+    clearForm(); 
+    navigation.navigate('PostsScreen'); 
   };
 
   return (
-    // <View style={styles.CreatePostsScreenView}>
-    //   <Text>CreatePostsScreen!</Text>
-    // </View>
 
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.flexContainer} >
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
       <View style={{ ...styles.container, ...styles.flexContainer }}>
-        <KeyboardAvoidingView style={styles.flexContainer}
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={20}>
 
-          <View style={{ ...styles.wrapContainer, ...styles.flexContainer }}>
+        <View style={{ ...styles.wrapContainer, ...styles.flexContainer }}>
 
-            {postPhoto ? (
-              <Image
-                source={{ uri: postPhoto }}
-                style={{
-                  width: '95%',
-                  height: 240,
-                  borderRadius: 8,
-                }}
-              />
-            ) : (
-              <Camera
-                style={styles.camera}
-                type={Camera.Constants.Type.back}
-                ref={cameraRef}
+          {postPhoto ? (
+            <ImageBackground
+              source={{ uri: postPhoto }}
+              style={styles.image}
+            >
+              <TouchableOpacity
+                style={styles.imageAddButton}
+                opacity={0.5}
+                onPress={makePhoto}
               >
-                <TouchableOpacity
-                  style={styles.imageAddButton}
-                  opacity={0.5}
-                  onPress={makePhoto}
-                >
-                  <FontAwesome name="camera" size={24} color="gray" />
-                </TouchableOpacity>
-              </Camera>
-            )}
-            <TouchableOpacity onPress={uploadPhoto}>
-              <Text style={styles.imageText}>
-                {postPhoto ? 'Редагувати фото' : 'Завантажте фото'}
-              </Text>
-            </TouchableOpacity>
-            <View style={styles.formContainer}>
+                <FontAwesome name='camera' size={24} color='white' />
+              </TouchableOpacity>
+            </ImageBackground>
+          ) : (
+            <Camera
+              style={styles.camera}
+              type={typeCamera}
+              ratio='16:9'
+              flashMode={flashCamera}
+              ref={cameraRef}
+            >
+              <TouchableOpacity
+                style={styles.imageAddButton}
+                opacity={0.5}
+                onPress={makePhoto}
+              >
+                <FontAwesome name='camera' size={24} color='gray' />
+              </TouchableOpacity>
+            </Camera>
+          )}
+          <TouchableOpacity onPress={uploadPhoto} >
+            <Text style={styles.imageText}>
+              {postPhoto ? 'Редагувати фото' : 'Завантажте фото'}
+            </Text>
+          </TouchableOpacity>
+
+          <KeyboardAvoidingView
+            behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={20}
+          >
+
+            <View style={styles.flexContainer}>
               <TextInput
-                style={styles.input}
-                placeholder="Назва..."
+                style={[styles.input, styles.margin32, focusedInput === 'photoName' && styles.isFocus]}
+                onFocus={() => setFocusedInput('photoName')}
+                onBlur={() => setFocusedInput(null)}
+                // style={styles.input}
+                placeholder='Назва...'
                 type={'text'}
                 name={'photoName'}
                 value={photoName}
                 onChangeText={setPhotoName}
               />
-              <TextInput
-                style={styles.input}
-                placeholder="Місцевість..."
-                type={'text'}
-                name={'photoLocation'}
-                value={photoLocationName}
-                onChangeText={setPhotoLocationName}
-              />
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  postPhoto
-                    ? {
-                      color: '#FFFFFF',
-                      backgroundColor: '#FF6C00',
-                    }
-                    : {
-                      color: '#BDBDBD',
-                      backgroundColor: '#F6F6F6',
-                    },
-                ]}
-                activeOpacity={0.5}
-                onPress={handleSubmit}
-              >
-                <Text
-                  style={[
-                    styles.buttonText,
-                    postPhoto
-                      ? {
-                        color: '#FFFFFF',
-                      }
-                      : {
-                        color: '#BDBDBD',
-                      },
-                  ]}
-                >
-                  Опубліковати
-                </Text>
-              </TouchableOpacity>
+
+              <View style={styles.containerLocalIcon}>
+                <TouchableOpacity style={styles.boxLocalIcon}>
+                  <Feather name='map-pin' size={24} color='#BDBDBD'
+                    style={[focusedInput === 'photoLocationName' && styles.isFocus]} />
+                </TouchableOpacity>
+                <TextInput
+                  style={[styles.input, styles.margin16, styles.locationPaddingLeft,
+                  focusedInput === 'photoLocationName' && styles.isFocus]}
+                  onFocus={() => setFocusedInput('photoLocationName')}
+                  onBlur={() => setFocusedInput(null)}
+                  placeholder='Місцевість...'
+                  type={'text'}
+                  name={'photoLocation'}
+                  value={photoLocationName}
+                  onChangeText={setPhotoLocationName}
+                />
+              </View>
+
             </View>
 
-          </View>
-
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </View>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            postPhoto
+              ? {
+                color: '#FFFFFF',
+                backgroundColor: '#FF6C00',
+              }
+              : {
+                color: '#BDBDBD',
+                backgroundColor: '#F6F6F6',
+              },
+          ]}
+          activeOpacity={0.5}
+          onPress={handleSubmit}
+        >
+          <Text
+            style={[
+              styles.buttonText,
+              postPhoto ? { color: '#FFFFFF', } : { color: '#BDBDBD', },
+            ]}
+          >
+            Опубліковати
+          </Text>
+        </TouchableOpacity>
       </View >
     </TouchableWithoutFeedback >
   )
@@ -203,47 +226,46 @@ export default CreatePostsScreen = () => {
 const styles = StyleSheet.create({
   CreatePostsScreenView: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   flexContainer: {
     flex: 1,
   },
 
-  // container: {
-  //   position: "relative",
-  //   fontFamily: 'Roboto-Bold',
-  //   alignItems: "flex-start",
-  //   justifyContent: "flex-start",
-  //   paddingTop: 31,
-  //   marginTop: 1,
-  //   paddingHorizontal: 16,
-  //   backgroundColor: "#FFFFFF",
-  // },
-
-  // bgImage: {
-  //   flex: 1,
-  //   resizeMode: "cover",
-  //   justifyContent: "center",
-  // },
-
-  wrapContainer: {
-    justifyContent: "flex-end",
-  },
-
   container: {
     flex: 1,
-    alignItems: 'center',
     backgroundColor: '#fff',
+    paddingTop: 31,
+    marginTop: 1,
+    paddingHorizontal: 16,
+    paddingBottom: 34,
   },
+
+  wrapContainer: {
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+
   camera: {
-    width: '92%',
+    display: 'flex',
+    width: '100%',
     height: 240,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
+  image: {
+    display: 'flex',
+    width: '100%',
+    height: 240,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   imageAddButton: {
     width: 60,
     height: 60,
@@ -252,37 +274,68 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   imageText: {
     color: '#BDBDBD',
-    fontWeight: '400',
+    justifyContent: 'flex-start',
+    marginTop: 8,
+
+    fontFamily: 'Roboto-Regular',
     fontSize: 16,
-    lineHeight: 19,
+    fontWeight: '400',
+  },
+
+  input: {
+    width: Dimensions.get('window').width - 32,
+    height: 50,
+    paddingVertical: 15,
+    fontFamily: 'Roboto-Regular',
+    fontSize: 16,
+    fontWeight: '400',
+    borderBottomColor: '#E8E8E8',
+    borderBottomWidth: 2,
+  },
+
+  margin16: {
     marginTop: 16,
   },
-  formContainer: {
-    flex: 3,
+
+  margin32: {
+    marginTop: 32,
   },
+
+  containerLocalIcon: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    position: 'relative',
+  },
+  boxLocalIcon: {
+    position: 'absolute',
+    top: 30,
+  },
+  locationPaddingLeft: {
+    paddingLeft: 28,
+  },
+
   button: {
-    height: 50,
-    width: 343,
+    height: 51,
+    width: Dimensions.get('window').width - 32,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 100,
-    marginTop: 44,
+    marginBottom: 220,
   },
   buttonText: {
+    fontFamily: 'Roboto-Regular',
+    fontSize: 16,
     fontWeight: '400',
   },
-  input: {
-    width: 340,
-    height: 50,
-    marginTop: 33,
-    padding: 16,
-    fontStyle: 'normal',
-    fontWeight: '400',
-    fontSize: 16,
-    borderBottomColor: '#E8E8E8',
-    borderBottomWidth: 2,
+
+
+  isFocus: {
+    borderBottomColor: 'black',
+    color: 'black',
   },
 
 });

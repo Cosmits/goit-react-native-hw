@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image } from 'react-native';
 import UserAvatar from '../images/userAvatar.jpg'
 
 export default PostsScreen = () => {
@@ -23,12 +23,12 @@ export default PostsScreen = () => {
 const styles = StyleSheet.create({
   PostsScreenView: {
     flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     paddingTop: 31,
     marginTop: 1,
     paddingHorizontal: 16,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
   },
   userContainer: {
     flexDirection: 'row',

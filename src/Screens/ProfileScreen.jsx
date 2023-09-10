@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from 'react-native';
 
 export default ProfileScreen = () => {
 
@@ -13,7 +13,7 @@ export default ProfileScreen = () => {
 const styles = StyleSheet.create({
   ProfileScreenView: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -1,6 +1,6 @@
-import { TouchableOpacity, StyleSheet } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default HeaderIconBtnLogout = () => {
 
@@ -9,9 +9,9 @@ export default HeaderIconBtnLogout = () => {
   return (
     <TouchableOpacity
       style={styles.HeaderIconBtnLogout}
-      onPress={() => navigation.navigate("LoginScreen")}
+      onPress={() => navigation.navigate('LoginScreen')}
     >
-      <Feather name="log-out" size={24} color="#BDBDBD" />
+      <Feather name='log-out' size={24} color='#BDBDBD' />
     </TouchableOpacity>
   );
 };

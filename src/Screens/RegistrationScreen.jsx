@@ -6,14 +6,14 @@ import {
 } from 'react-native';
 import imageBG from '../images/Photo_BG.jpg'
 import { useState } from 'react';
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 export default RegistrationScreen = () => {
 
-  const [login, setLogin] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [login, setLogin] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const [showPassword, setShowPassword] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
@@ -21,16 +21,16 @@ export default RegistrationScreen = () => {
   const navigation = useNavigation();
 
   const handleRegister = () => {
-    console.log("Register:", {
+    console.log('Register:', {
       login: login,
       email: email,
       password: password,
     });
-    setLogin("");
-    setEmail("");
-    setPassword("");
+    setLogin('');
+    setEmail('');
+    setPassword('');
 
-    navigation.navigate("Home");
+    navigation.navigate('Home');
   };
 
 
@@ -42,7 +42,7 @@ export default RegistrationScreen = () => {
         <ImageBackground style={styles.bgImage} source={imageBG} >
 
           <KeyboardAvoidingView style={styles.flexContainer}
-            behavior={Platform.OS == "ios" ? "padding" : "height"}
+            behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={-100}>
 
             <View style={{ ...styles.wrapContainer, ...styles.flexContainer }}>
@@ -52,7 +52,7 @@ export default RegistrationScreen = () => {
                 <View style={styles.avatarBox}>
                   <TouchableOpacity style={styles.plusBtn}>
                     <AntDesign
-                      name="pluscircleo"
+                      name='pluscircleo'
                       style={styles.pluscircleo}
                       size={25}
                     />
@@ -64,36 +64,36 @@ export default RegistrationScreen = () => {
                 <View style={styles.inputContainer}>
 
                   <TextInput
-                    style={[styles.inputData, focusedInput === "login" && styles.isFocus]}
-                    onFocus={() => setFocusedInput("login")}
+                    style={[styles.inputData, focusedInput === 'login' && styles.isFocus]}
+                    onFocus={() => setFocusedInput('login')}
                     onBlur={() => setFocusedInput(null)}
                     value={login}
                     onChangeText={setLogin}
-                    placeholder="Логін"
+                    placeholder='Логін'
                   ></TextInput>
 
                   <TextInput
-                    style={[styles.inputData, focusedInput === "email" && styles.isFocus]}
-                    onFocus={() => setFocusedInput("email")}
+                    style={[styles.inputData, focusedInput === 'email' && styles.isFocus]}
+                    onFocus={() => setFocusedInput('email')}
                     onBlur={() => setFocusedInput(null)}
                     value={email}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
+                    keyboardType='email-address'
+                    autoCapitalize='none'
                     onChangeText={setEmail}
-                    placeholder="Адреса електронної пошти"
+                    placeholder='Адреса електронної пошти'
                   ></TextInput>
 
                   <View style={styles.divPassword}>
                     <TextInput
                       style={[styles.inputData,
-                      focusedInput === "password" && styles.isFocus]}
-                      onFocus={() => setFocusedInput("password")}
+                      focusedInput === 'password' && styles.isFocus]}
+                      onFocus={() => setFocusedInput('password')}
                       onBlur={() => setFocusedInput(null)}
-                      autoCompleteType="password"
+                      autoCompleteType='password'
                       autoCorrect={false}
                       value={password}
                       onChangeText={setPassword}
-                      placeholder="Пароль"
+                      placeholder='Пароль'
                       secureTextEntry={!showPassword}
                     >
                     </TextInput>
@@ -101,7 +101,7 @@ export default RegistrationScreen = () => {
                     <TouchableOpacity
                       activeOpacity={0.5}
                       onPress={() => setShowPassword(!showPassword)}>
-                      <Text style={styles.showPasswordTextStyle}>{showPassword ? "Приховати" : "Показати"}</Text>
+                      <Text style={styles.showPasswordTextStyle}>{showPassword ? 'Приховати' : 'Показати'}</Text>
                     </TouchableOpacity>
                   </View>
 
@@ -115,7 +115,7 @@ export default RegistrationScreen = () => {
 
                 <TouchableOpacity
                   style={styles.btnLogin}
-                  onPress={() => navigation.navigate("LoginScreen")}
+                  onPress={() => navigation.navigate('LoginScreen')}
                 >
                   <Text style={styles.btnLoginText}>Вже є аккаунт? Увійти</Text>
                 </TouchableOpacity>
@@ -136,23 +136,23 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    position: "relative",
+    position: 'relative',
     fontFamily: 'Roboto-Bold',
   },
 
   bgImage: {
     flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
+    resizeMode: 'cover',
+    justifyContent: 'center',
   },
 
   wrapContainer: {
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
     // marginBottom: 45,
   },
 
   boxAuth: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
 
@@ -163,9 +163,9 @@ const styles = StyleSheet.create({
   avatarBox: {
     width: 120,
     height: 120,
-    backgroundColor: "#F6F6F6",
-    marginLeft: "auto",
-    marginRight: "auto",
+    backgroundColor: '#F6F6F6',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     borderRadius: 16,
     marginTop: -60,
     // top:-60,
@@ -176,27 +176,27 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     borderRadius: 100,
-    marginLeft: "auto",
-    marginTop: "auto",
+    marginLeft: 'auto',
+    marginTop: 'auto',
     marginBottom: 14,
     marginRight: -13,
   },
 
   pluscircleo: {
-    color: "#FF6C00",
+    color: '#FF6C00',
   },
 
 
   title: {
     marginTop: 32,
     // paddingVertical: 8,
-    backgroundColor: "#ffffff",
-    color: "#212121",
+    backgroundColor: '#ffffff',
+    color: '#212121',
 
     fontFamily: 'Roboto-Medium',
     fontSize: 30,
-    textAlign: "center",
-    fontWeight: "500",
+    textAlign: 'center',
+    fontWeight: '500',
     lineHeight: 35,
   },
 
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     paddingTop: 32,
     rowGap: 16,
     paddingBottom: 43,
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
   },
 
   inputData: {
@@ -214,49 +214,49 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     // paddingRight: 16,
     height: 50,
-    backgroundColor: "#F6F6F6",
-    borderColor: "#E8E8E8",
+    backgroundColor: '#F6F6F6',
+    borderColor: '#E8E8E8',
     borderRadius: 6,
     borderWidth: 1,
 
     fontFamily: 'Roboto-Regular',
     fontSize: 16,
-    fontWeight: "400",
+    fontWeight: '400',
     lineHeight: 19,
   },
 
   divPassword: {
-    position: "relative",
+    position: 'relative',
   },
 
   showPasswordTextStyle: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 15,
     right: 32,
 
     fontFamily: 'Roboto-Regular',
     fontSize: 16,
-    fontWeight: "400",
+    fontWeight: '400',
     lineHeight: 19,
-    color: "#1B4371",
+    color: '#1B4371',
   },
 
   btnRegister: {
     // marginTop: 43,
     borderRadius: 100,
-    backgroundColor: "#FF6C00",
+    backgroundColor: '#FF6C00',
     marginHorizontal: 16,
     paddingVertical: 16,
   },
 
   btnRegisterText: {
-    fontFamily: "Roboto-Regular",
+    fontFamily: 'Roboto-Regular',
     fontSize: 16,
-    fontWeight: "400",
+    fontWeight: '400',
     lineHeight: 19,
-    color: "#FFFFFF",
-    marginRight: "auto",
-    marginLeft: "auto",
+    color: '#FFFFFF',
+    marginRight: 'auto',
+    marginLeft: 'auto',
 
   },
 
@@ -266,17 +266,17 @@ const styles = StyleSheet.create({
   },
 
   btnLoginText: {
-    fontFamily: "Roboto-Regular",
+    fontFamily: 'Roboto-Regular',
     fontSize: 16,
-    fontWeight: "400",
+    fontWeight: '400',
     lineHeight: 19,
-    color: "#1B4371",
-    marginRight: "auto",
-    marginLeft: "auto",
+    color: '#1B4371',
+    marginRight: 'auto',
+    marginLeft: 'auto',
   },
 
   isFocus: {
-    borderColor: "#FF6C00",
-    backgroundColor: "#FFFFFF",
+    borderColor: '#FF6C00',
+    backgroundColor: '#FFFFFF',
   },
 });
