@@ -6,11 +6,12 @@ import {
   StyleSheet, Text, TextInput,
   TouchableOpacity, TouchableWithoutFeedback, Dimensions
 } from 'react-native';
-import { Camera } from 'expo-camera';
+import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
-// import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { FontAwesome, Feather } from '@expo/vector-icons';
+import Button from '../components/Button';
 
 export default CreatePostsScreen = () => {
 
@@ -18,14 +19,14 @@ export default CreatePostsScreen = () => {
 
   const [focusedInput, setFocusedInput] = useState(null);
 
-  const [postPhoto, setPostPhoto] = useState(null); 
-  const [photoName, setPhotoName] = useState(''); 
-  const [typeCamera, setTypeCamera] = useState(Camera.Constants.Type.back); 
-  const [flashCamera, setFlashCamera] = useState(Camera.Constants.FlashMode.off); 
-  const [hasPermission, setHasPermission] = useState(null); 
-  const cameraRef = useRef(null); 
+  const [postPhoto, setPostPhoto] = useState(null);
+  const [photoName, setPhotoName] = useState('');
+  const [typeCamera, setTypeCamera] = useState(Camera.Constants.Type.back);
+  const [flashCamera, setFlashCamera] = useState(Camera.Constants.FlashMode.off);
+  const [hasPermission, setHasPermission] = useState(null);
+  const cameraRef = useRef(null);
 
-  const [photoLocationName, setPhotoLocationName] = useState(''); 
+  const [address, setAddress] = useState('');
   const [currentGeoLocation, setCurrentGeoLocation] = useState({});
 
 
@@ -35,15 +36,10 @@ export default CreatePostsScreen = () => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        console.log('No access to Location');
+        console.log("Permission to access location was denied");
       }
 
-      let location = await Location.getCurrentPositionAsync({});
-      const coords = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      setCurrentGeoLocation(coords);
+
     })();
   }, []);
 
@@ -81,20 +77,41 @@ export default CreatePostsScreen = () => {
   const clearForm = () => {
     setPostPhoto(null);
     setPhotoName('');
-    setPhotoLocationName('');
+    setAddress('');
   };
 
-  // Функція для завантаження фотографії з галереї пристрою
-  const uploadPhoto = async () => {
-    // let result = await ImagePicker.launchImageLibraryAsync({
-    //   mediaTypes: ImagePicker.MediaTypeOptions.All,
-    //   allowsEditing: true,
-    //   aspect: [4, 3],
-    //   quality: 1,
-    // });
+  const choosePhoto = async () => {
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    // if (!result.cancelled) setPostPhoto(result.assets[0].uri);
+      if (status === 'granted') {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+
+        if (!result.canceled) {
+          setPostPhoto(result.assets[0].uri);
+        }
+      }
+    } catch (error) {
+      console.log('ImagePicker: ', error.message);
+    }
   };
+
+  const getAddress = async () => {
+    const location = await Location.getCurrentPositionAsync({});
+    const reverseGeocode = await Location.reverseGeocodeAsync(location.coords);
+
+    const { street, streetNumber, city, postalCode, country } = reverseGeocode[0]
+    const address = street + ' ' + streetNumber + ', ' + city + ', ' + postalCode + ', ' + country;
+
+    setCurrentGeoLocation(location.coords)
+    setAddress(address);
+  }
 
   const handleSubmit = () => {
     const data = {
@@ -102,12 +119,12 @@ export default CreatePostsScreen = () => {
       description: photoName,
       comments: [],
       likes: 0,
-      locationName: photoLocationName,
+      address: address,
       geoLocation: currentGeoLocation,
     };
     // posts.unshift(data); 
-    clearForm(); 
-    navigation.navigate('PostsScreen'); 
+    clearForm();
+    navigation.navigate('PostsScreen');
   };
 
   return (
@@ -124,7 +141,6 @@ export default CreatePostsScreen = () => {
             >
               <TouchableOpacity
                 style={styles.imageAddButton}
-                opacity={0.5}
                 onPress={makePhoto}
               >
                 <FontAwesome name='camera' size={24} color='white' />
@@ -134,24 +150,50 @@ export default CreatePostsScreen = () => {
             <Camera
               style={styles.camera}
               type={typeCamera}
-              ratio='16:9'
+              ratio='4:3'
               flashMode={flashCamera}
               ref={cameraRef}
             >
               <TouchableOpacity
                 style={styles.imageAddButton}
-                opacity={0.5}
                 onPress={makePhoto}
               >
                 <FontAwesome name='camera' size={24} color='gray' />
               </TouchableOpacity>
             </Camera>
           )}
-          <TouchableOpacity onPress={uploadPhoto} >
-            <Text style={styles.imageText}>
-              {postPhoto ? 'Редагувати фото' : 'Завантажте фото'}
-            </Text>
-          </TouchableOpacity>
+
+          <View style={styles.wrapImageText}>
+
+            <TouchableOpacity onPress={choosePhoto} >
+              <Text style={styles.imageText}>
+                {postPhoto ? 'Редагувати фото' : 'Завантажте фото'}
+              </Text>
+            </TouchableOpacity>
+
+            <Button
+              onPress={() =>
+                setFlashCamera(
+                  flashCamera === Camera.Constants.FlashMode.off
+                    ? Camera.Constants.FlashMode.on
+                    : Camera.Constants.FlashMode.off
+                )
+              }
+              icon="flash"
+              color={flashCamera === Camera.Constants.FlashMode.off ? '#BDBDBD' : 'gray'}
+            />
+
+            <Button
+              title=""
+              icon="retweet"
+              onPress={() => {
+                setTypeCamera(
+                  typeCamera === CameraType.back ? CameraType.front : CameraType.back
+                );
+              }}
+            />
+
+          </View>
 
           <KeyboardAvoidingView
             behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
@@ -172,7 +214,7 @@ export default CreatePostsScreen = () => {
               />
 
               <View style={styles.containerLocalIcon}>
-                <TouchableOpacity style={styles.boxLocalIcon}>
+                <TouchableOpacity style={styles.boxLocalIcon} onPress={getAddress}>
                   <Feather name='map-pin' size={24} color='#BDBDBD'
                     style={[focusedInput === 'photoLocationName' && styles.isFocus]} />
                 </TouchableOpacity>
@@ -184,8 +226,7 @@ export default CreatePostsScreen = () => {
                   placeholder='Місцевість...'
                   type={'text'}
                   name={'photoLocation'}
-                  value={photoLocationName}
-                  onChangeText={setPhotoLocationName}
+                  value={address}
                 />
               </View>
 
@@ -273,6 +314,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
+    opacity: 0.5,
+  },
+
+  wrapImageText: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: Dimensions.get('window').width - 32,
   },
 
   imageText: {
@@ -313,6 +361,7 @@ const styles = StyleSheet.create({
   boxLocalIcon: {
     position: 'absolute',
     top: 30,
+    zIndex: 2,
   },
   locationPaddingLeft: {
     paddingLeft: 28,
