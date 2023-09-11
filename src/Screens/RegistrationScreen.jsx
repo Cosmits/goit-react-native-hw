@@ -4,6 +4,7 @@ import {
   Text, TextInput, TouchableOpacity,
   TouchableWithoutFeedback, View
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import imageBG from '../images/Photo_BG.jpg'
 import { useState } from 'react';
 import { AntDesign } from '@expo/vector-icons';
@@ -33,6 +34,28 @@ export default RegistrationScreen = () => {
     navigation.navigate('Home');
   };
 
+  const pickImage = async () => {
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (status === 'granted') {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+
+        // if (!result.canceled) {
+        //
+        // }
+      }
+    } catch (error) {
+      console.log('RegistrationScreen => ImagePicker: ', error.message);
+    }
+  };
+
 
   return (
 
@@ -48,9 +71,9 @@ export default RegistrationScreen = () => {
             <View style={{ ...styles.wrapContainer, ...styles.flexContainer }}>
 
               <View style={{ ...styles.boxAuth, }}>
-                {/* paddingBottom: (isFocusInputLogin || isFocusInputEmail || isFocusInputPassword) ? -78 : 78  */}
+                
                 <View style={styles.avatarBox}>
-                  <TouchableOpacity style={styles.plusBtn}>
+                  <TouchableOpacity style={styles.plusBtn} onPress={pickImage}>
                     <AntDesign
                       name='pluscircleo'
                       style={styles.pluscircleo}

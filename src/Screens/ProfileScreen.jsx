@@ -1,19 +1,179 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import * as ImagePicker from 'expo-image-picker';
+import {
+  Dimensions,
+  ImageBackground,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
+import HeaderIconBtnLogout from '../components/HeaderIconBtnLogout';
+import Posts from '../components/Post';
+import Photo_BG from '../images/Photo_BG.jpg';
+import newAvatar from '../images/userAvatarBig.jpg';
 
 export default ProfileScreen = () => {
+  const [posts, setPosts] = useState([]);
 
+  const pickImage = async () => {
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (status === 'granted') {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+
+        // if (!result.canceled) {
+        //
+        // }
+      }
+    } catch (error) {
+      console.log('ProfileScreen => ImagePicker: ', error.message);
+    }
+  };
 
   return (
-    <View style={styles.ProfileScreenView}>
-      <Text>ProfileScreen!</Text>
-    </View>
-  )
+    <ImageBackground source={Photo_BG} style={styles.backgroundImage}>
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.logOutIcon}>
+            <HeaderIconBtnLogout />
+          </View>
+    
+          <View style={styles.avatarWrap}>
+            <ImageBackground
+              source={newAvatar}
+              style={styles.avatar}
+            />
+
+            <View style={styles.icon}>
+              <AntDesign
+                name="pluscircleo"
+                size={25}
+                color="#FF6C00"
+                onPress={pickImage}
+              />
+            </View>
+          </View>
+
+          <Text style={styles.title}>Natali Romanova</Text>
+
+          {posts?.length ? (
+            posts.map(
+              ({
+                url,
+                name,
+                locationName,
+                geolocation,
+                likes,
+                creationTime,
+                comments,
+                email,
+              }) => (
+                <Posts
+                  key={creationTime}
+                  photoUri={url}
+                  name={name}
+                  location={locationName}
+                  likes={likes}
+                  geolocation={geolocation}
+                  id={creationTime}
+                  comments={comments}
+                  email={email}
+                />
+              )
+            )
+          ) : (
+            <View style={styles.textWrapper}>
+              <Text style={styles.text}>No posts</Text>
+            </View>
+          )}
+        </View>
+      </ScrollView>
+    </ImageBackground>
+  );
 }
 
 const styles = StyleSheet.create({
-  ProfileScreenView: {
+  backgroundImage: {
+    position: 'relative',
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: '100%',
+    backgroundColor: '#FFFFFF',
+  },
+
+  container: {
+    position: 'relative',
+    minHeight: Dimensions.get('window').height - 147,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    marginTop: 147,
+    paddingHorizontal: 16,
+    paddingVertical: 92,
+    backgroundColor: '#FFFFFF',
+  },
+
+  logOutIcon: {
+    position: 'absolute',
+    top: 22,
+    right: 16,
+  },
+
+  avatarWrap: {
+    position: 'absolute',
+    top: -60,
+    left: '50%',
+    transform: [{ translateX: -50 }],
+  },
+
+  avatar: {
+    width: 120,
+    height: 120,
+    backgroundColor: '#F6F6F6',
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+
+  icon: {
+    position: 'absolute',
+    right: -12,
+    bottom: 14,
+
+    width: 25,
+    height: 25,
+    borderRadius: 50,
+    backgroundColor: '#FFFFFF',
+  },
+
+  title: {
+    fontFamily: 'Roboto-Medium',
+    fontWeight: '500',
+    fontSize: 30,
+    lineHeight: 35,
+    textAlign: 'center',
+    marginBottom: 32,
+    color: '#212121',
+  },
+
+  textWrapper: {
+    display: 'flex',
+    gap: 8,
+    marginTop: 32,
+  },
+
+  text: {
+    fontFamily: 'Roboto-Medium',
+    fontWeight: '500',
+    fontSize: 20,
+    lineHeight: 22,
+    textAlign: 'center',
+    color: '#212121',
   },
 });

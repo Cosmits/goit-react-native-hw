@@ -21,15 +21,13 @@ export default CreatePostsScreen = () => {
 
   const [postPhoto, setPostPhoto] = useState(null);
   const [photoName, setPhotoName] = useState('');
-  const [typeCamera, setTypeCamera] = useState(Camera.Constants.Type.back);
+  const [typeCamera, setTypeCamera] = useState(CameraType.back);
   const [flashCamera, setFlashCamera] = useState(Camera.Constants.FlashMode.off);
   const [hasPermission, setHasPermission] = useState(null);
   const cameraRef = useRef(null);
 
   const [address, setAddress] = useState('');
   const [currentGeoLocation, setCurrentGeoLocation] = useState({});
-
-
 
   // =================================================================
   useEffect(() => {
@@ -38,7 +36,6 @@ export default CreatePostsScreen = () => {
       if (status !== 'granted') {
         console.log("Permission to access location was denied");
       }
-
 
     })();
   }, []);
@@ -74,12 +71,14 @@ export default CreatePostsScreen = () => {
     }
   };
 
+  // =================================================================
   const clearForm = () => {
     setPostPhoto(null);
     setPhotoName('');
     setAddress('');
   };
 
+  // =================================================================
   const choosePhoto = async () => {
     try {
       const { status } =
@@ -102,6 +101,7 @@ export default CreatePostsScreen = () => {
     }
   };
 
+  // =================================================================
   const getAddress = async () => {
     const location = await Location.getCurrentPositionAsync({});
     const reverseGeocode = await Location.reverseGeocodeAsync(location.coords);
@@ -113,6 +113,7 @@ export default CreatePostsScreen = () => {
     setAddress(address);
   }
 
+  // =================================================================
   const handleSubmit = () => {
     const data = {
       img: postPhoto,
@@ -122,7 +123,8 @@ export default CreatePostsScreen = () => {
       address: address,
       geoLocation: currentGeoLocation,
     };
-    // posts.unshift(data); 
+    // posts data function
+    
     clearForm();
     navigation.navigate('PostsScreen');
   };
@@ -172,6 +174,8 @@ export default CreatePostsScreen = () => {
             </TouchableOpacity>
 
             <Button
+              icon="flash"
+              color={flashCamera === Camera.Constants.FlashMode.off ? '#BDBDBD' : '#FF6C00'}
               onPress={() =>
                 setFlashCamera(
                   flashCamera === Camera.Constants.FlashMode.off
@@ -179,13 +183,12 @@ export default CreatePostsScreen = () => {
                     : Camera.Constants.FlashMode.off
                 )
               }
-              icon="flash"
-              color={flashCamera === Camera.Constants.FlashMode.off ? '#BDBDBD' : 'gray'}
             />
 
             <Button
-              title=""
+              // title=""
               icon="retweet"
+              color={typeCamera === CameraType.back ? '#BDBDBD' : '#FF6C00'}
               onPress={() => {
                 setTypeCamera(
                   typeCamera === CameraType.back ? CameraType.front : CameraType.back
