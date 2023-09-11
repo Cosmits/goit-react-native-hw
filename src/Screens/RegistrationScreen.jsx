@@ -171,7 +171,6 @@ const styles = StyleSheet.create({
 
   wrapContainer: {
     justifyContent: 'flex-end',
-    // marginBottom: 45,
   },
 
   boxAuth: {
@@ -191,7 +190,7 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     borderRadius: 16,
     marginTop: -60,
-    // top:-60,
+    
 
   },
 
@@ -212,7 +211,6 @@ const styles = StyleSheet.create({
 
   title: {
     marginTop: 32,
-    // paddingVertical: 8,
     backgroundColor: '#ffffff',
     color: '#212121',
 
@@ -233,9 +231,7 @@ const styles = StyleSheet.create({
 
   inputData: {
     marginHorizontal: 16,
-    // marginRight: 16,
     paddingHorizontal: 16,
-    // paddingRight: 16,
     height: 50,
     backgroundColor: '#F6F6F6',
     borderColor: '#E8E8E8',
@@ -265,7 +261,6 @@ const styles = StyleSheet.create({
   },
 
   btnRegister: {
-    // marginTop: 43,
     borderRadius: 100,
     backgroundColor: '#FF6C00',
     marginHorizontal: 16,
@@ -285,7 +280,6 @@ const styles = StyleSheet.create({
 
   btnLogin: {
     marginTop: 16,
-    // marginBottom: 45,
   },
 
   btnLoginText: {
