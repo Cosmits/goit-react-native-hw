@@ -1,113 +1,64 @@
-import { useState } from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 import {
   ImageBackground,
-  Pressable,
   StyleSheet,
-  Text,
   View,
-  Alert,
+  Text,
 } from 'react-native';
-
-import { SimpleLineIcons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
-import { FontAwesome } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
-
-// import { deletePost, getLike } from '../../redux/operations';
-// import { selectEmail } from '../../redux/selectors';
+import { Feather } from '@expo/vector-icons';
 
 export default function Posts({
-  photoUri,
-  name,
-  location,
+  id,
+  img,
+  title,
+  locationName,
   likes,
   geolocation,
-  id,
   comments,
-  email,
 }) {
-  const navigation = useNavigation();
-  // const dispatch = useDispatch();
-  // const currentEmail = useSelector(selectEmail);
 
   const addLike = () => {
-    if (likes?.includes(currentEmail)) return;
-    // dispatch(getLike({ id, currentEmail }));
-  };
-
-  const showAlert = () => {
-    Alert.alert(
-      'Видалення поста',
-      'Ви точно хочете видалити пост?',
-      [
-        //  { text: 'Так, видалити', onPress: () => dispatch(deletePost(id)) },
-        { text: 'Так, видалити', onPress: () => console.log(id) },
-        { text: 'Ні, відмінити', style: 'cancel' },
-      ],
-      { cancelable: false }
-    );
+    //add like
   };
 
   return (
     <View style={styles.post}>
-      <ImageBackground
+      <ImageBackground source={img}
         style={styles.image}
-        source={{ uri: photoUri ? photoUri : null }}
       >
-        {email === currentEmail && (
-          <MaterialIcons
-            name="delete"
-            size={30}
-            style={styles.deleteIcon}
-            onPress={showAlert}
-          />
-        )}
       </ImageBackground>
-      <Text style={styles.text}>{name}</Text>
+      <Text style={styles.text}>{title}</Text>
       <View style={styles.infoBox}>
         <View style={styles.box}>
-          <FontAwesome
-            onPress={() => {
-              navigation.navigate('Comments', { photoUri, id });
-            }}
-            name="comment"
+          <Feather
+            name="message-circle"
             size={24}
-            style={{
-              ...styles.icon,
-              color: comments?.length > 0 ? '#FF6C00' : '#BDBDBD',
-            }}
+            style={[styles.icon,
+            comments?.length && styles.iconActive]}
           />
           <Text style={{ ...styles.postsNumber, marginRight: 24 }}>
             {comments?.length || 0}
           </Text>
 
-          <AntDesign
-            name="like2"
-            size={24}
-            style={{
-              ...styles.icon,
-              color: likes?.length > 0 ? '#FF6C00' : '#BDBDBD',
-            }}
-            onPress={addLike}
-          />
-          <Text style={styles.postsNumber}>{likes?.length ?? 0}</Text>
+          {likes &&
+            (<View>
+              <Feather
+                name="thumbs-up"
+                size={24}
+                style={[styles.icon,
+                likes > 0 && styles.iconActive]}
+                onPress={addLike}
+              />
+              <Text style={styles.postsNumber}>{likes}</Text>
+            </View>)}
         </View>
-        <Pressable
-          onPress={() => {
-            navigation.navigate('Map', geolocation);
-          }}
-        >
-          <View style={styles.box}>
-            <SimpleLineIcons
-              name="location-pin"
-              size={24}
-              style={styles.icon}
-            />
-            <Text style={styles.locationText}>{location}</Text>
-          </View>
-        </Pressable>
+        <View style={styles.box}>
+          <Feather
+            name="map-pin"
+            size={24}
+            style={styles.icon}
+          />
+          <Text style={styles.locationText}>{locationName}</Text>
+        </View>
       </View>
     </View>
   );
@@ -125,17 +76,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 
-  deleteIcon: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    color: '#FF6C00',
-    opacity: 0.8,
-  },
-
   text: {
     fontFamily: 'Roboto',
-    fontWeight: 500,
+    fontWeight: '500',
     fontSize: 16,
     lineHeight: 19,
     color: '#212121',
@@ -150,13 +93,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  box: { display: 'flex', flexDirection: 'row', alignItems: 'center' },
+  box: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
 
-  icon: { color: '#BDBDBD', marginRight: 6 },
+  icon: {
+    color: '#BDBDBD',
+    marginRight: 6
+  },
+  iconActive: {
+    color: '#FF6C00',
+  },
 
   postsNumber: {
     fontFamily: 'Roboto',
-    fontWeight: 400,
+    fontWeight: '400',
     fontSize: 16,
     lineHeight: 19,
     color: '#212121',
@@ -164,7 +117,7 @@ const styles = StyleSheet.create({
 
   locationText: {
     fontFamily: 'Roboto',
-    fontWeight: 400,
+    fontWeight: '400',
     fontSize: 16,
     lineHeight: 19,
     color: '#212121',

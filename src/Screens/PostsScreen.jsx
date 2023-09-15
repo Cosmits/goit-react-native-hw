@@ -1,12 +1,15 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import Posts from '../components/Post';
 import UserAvatar from '../images/userAvatar.jpg'
 
-export default PostsScreen = () => {
+import { postsData } from '../data/data';
 
+export default PostsScreen = () => {
+  const [posts, setPosts] = useState(postsData);
 
   return (
     <View style={styles.PostsScreenView}>
-      {/* <Text>PostsScreen!</Text> */}
       <View style={styles.userContainer}>
         <Image style={styles.avatarImg} source={UserAvatar} />
         <View style={styles.userInfo}>
@@ -14,8 +17,32 @@ export default PostsScreen = () => {
           <Text style={styles.userEmail}>email@example.com</Text>
         </View>
       </View>
-
-      
+      <ScrollView style={styles.scrollView} >
+        {posts?.length && (
+          posts.map(
+            ({
+              id,
+              img,
+              title,
+              locationName,
+              comments,
+              email,
+            }) => (
+              <Posts
+                key={id}
+                id={id}
+                img={img}
+                title={title}
+                locationName={locationName}
+                likes={null}
+                geolocation={locationName}
+                comments={comments}
+                email={email}
+              />
+            )
+          )
+        )}
+      </ScrollView>
     </View>
   )
 }
@@ -29,6 +56,7 @@ const styles = StyleSheet.create({
     marginTop: 1,
     paddingHorizontal: 16,
     backgroundColor: '#FFFFFF',
+    width: '100%',
   },
   userContainer: {
     flexDirection: 'row',
@@ -56,5 +84,14 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     fontSize: 11,
     lineHeight: 13,
+  },
+
+
+
+  scrollView: {
+    display: 'flex',
+    width: '100%',
+    gap: 8,
+    marginTop: 32,
   },
 });

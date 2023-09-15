@@ -27,7 +27,7 @@ export default LoginScreen = () => {
     setEmail('');
     setPassword('');
     
-    navigation.navigate('Home');
+    navigation.navigate('BottomNavigator');
   };
 
 
@@ -145,7 +145,6 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     borderRadius: 16,
     marginTop: -60,
-    // top:-60,
   },
 
   plusBtn: {
@@ -165,7 +164,6 @@ const styles = StyleSheet.create({
 
   title: {
     marginTop: 32,
-    // paddingVertical: 8,
     backgroundColor: '#ffffff',
     color: '#212121',
 
@@ -186,9 +184,7 @@ const styles = StyleSheet.create({
 
   inputData: {
     marginHorizontal: 16,
-    // marginRight: 16,
     paddingHorizontal: 16,
-    // paddingRight: 16,
     height: 50,
     backgroundColor: '#F6F6F6',
     borderColor: '#E8E8E8',
@@ -218,7 +214,6 @@ const styles = StyleSheet.create({
   },
 
   btnRegister: {
-    // marginTop: 43,
     borderRadius: 100,
     backgroundColor: '#FF6C00',
     marginHorizontal: 16,

@@ -1,16 +1,16 @@
 import { View, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Feather, Ionicons } from '@expo/vector-icons';
-import PostsScreen from './PostsScreen';
-import ProfileScreen from './ProfileScreen';
-import CreatePostsScreen from './CreatePostsScreen';
+import PostsScreen from '../Screens/PostsScreen';
+import ProfileScreen from '../Screens/ProfileScreen';
+import CreatePostsScreen from '../Screens/CreatePostsScreen';
 import HeaderTittle from '../components/HeaderTittle';
 import HeaderIconBtnBack from '../components/HeaderIconBtnBack';
 
 
 const Tabs = createBottomTabNavigator();
 
-export default Home = () => {
+export default BottomNavigator = () => {
   return (
     <Tabs.Navigator
       screenOptions={({ route }) => ({
@@ -44,7 +44,7 @@ export default Home = () => {
         },
         tabBarActiveTintColor: '#FF6C00',
         tabBarInactiveTintColor: '#212121CC',
-      
+
         headerRightContainerStyle: { paddingRight: 16, paddingBottom: 9 },
         headerLeftContainerStyle: { paddingLeft: 16, paddingBottom: 9 },
         tabBarStyle: { height: 70, justifyContent: 'center' },

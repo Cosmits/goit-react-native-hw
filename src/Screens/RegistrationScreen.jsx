@@ -31,7 +31,7 @@ export default RegistrationScreen = () => {
     setEmail('');
     setPassword('');
 
-    navigation.navigate('Home');
+    navigation.navigate('BottomNavigator');
   };
 
   const pickImage = async () => {

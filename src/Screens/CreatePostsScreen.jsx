@@ -4,7 +4,7 @@ import {
   ImageBackground, View,
   Keyboard, KeyboardAvoidingView,
   StyleSheet, Text, TextInput,
-  TouchableOpacity, TouchableWithoutFeedback, Dimensions
+  TouchableOpacity, TouchableWithoutFeedback
 } from 'react-native';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
@@ -73,7 +73,7 @@ export default CreatePostsScreen = () => {
 
   // =================================================================
   const clearForm = () => {
-    setPostPhoto(null);
+    postPhoto(null);
     setPhotoName('');
     setAddress('');
   };
@@ -103,12 +103,18 @@ export default CreatePostsScreen = () => {
 
   // =================================================================
   const getAddress = async () => {
-    const location = await Location.getCurrentPositionAsync({});
+    const location = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Highest,
+      maximumAge: 10000
+    });
     const reverseGeocode = await Location.reverseGeocodeAsync(location.coords);
 
     const { street, streetNumber, city, postalCode, country } = reverseGeocode[0]
-    const address = street + ' ' + streetNumber + ', ' + city + ', ' + postalCode + ', ' + country;
+    const address = `${street} ${streetNumber}, ${city}, ${postalCode}, ${country}`;
 
+    console.log("🚀 ~ file: CreatePostsScreen.jsx:115 ~ getAddress ~ address:", address)
+    console.log("🚀 ~ file: CreatePostsScreen.jsx:117 ~ getAddress ~ location.coords:", location.coords)
+    
     setCurrentGeoLocation(location.coords)
     setAddress(address);
   }
@@ -124,172 +130,153 @@ export default CreatePostsScreen = () => {
       geoLocation: currentGeoLocation,
     };
     // posts data function
-    
+
     clearForm();
     navigation.navigate('PostsScreen');
+  };
+
+  // =================================================================
+
+  const deletePost = () => {
+    setPostPhoto('');
+    setName('');
+    setLocationName('');
   };
 
   return (
 
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
-      <View style={{ ...styles.container, ...styles.flexContainer }}>
+      <View style={styles.container}>
 
-        <View style={{ ...styles.wrapContainer, ...styles.flexContainer }}>
-
-          {postPhoto ? (
-            <ImageBackground
-              source={{ uri: postPhoto }}
-              style={styles.image}
+        {postPhoto ? (
+          <ImageBackground
+            source={{ uri: postPhoto }}
+            style={styles.image}
+          >
+            <TouchableOpacity
+              style={styles.imageAddButton}
+              onPress={makePhoto}
             >
-              <TouchableOpacity
-                style={styles.imageAddButton}
-                onPress={makePhoto}
-              >
-                <FontAwesome name='camera' size={24} color='white' />
-              </TouchableOpacity>
-            </ImageBackground>
-          ) : (
-            <Camera
-              style={styles.camera}
-              type={typeCamera}
-              ratio='4:3'
-              flashMode={flashCamera}
-              ref={cameraRef}
-            >
-              <TouchableOpacity
-                style={styles.imageAddButton}
-                onPress={makePhoto}
-              >
-                <FontAwesome name='camera' size={24} color='gray' />
-              </TouchableOpacity>
-            </Camera>
-          )}
-
-          <View style={styles.wrapImageText}>
-
-            <TouchableOpacity onPress={choosePhoto} >
-              <Text style={styles.imageText}>
-                {postPhoto ? 'Редагувати фото' : 'Завантажте фото'}
-              </Text>
+              <FontAwesome name='camera' size={24} color='#FFFFFF' />
             </TouchableOpacity>
-
-            <Button
-              icon="flash"
-              color={flashCamera === Camera.Constants.FlashMode.off ? '#BDBDBD' : '#FF6C00'}
-              onPress={() =>
-                setFlashCamera(
-                  flashCamera === Camera.Constants.FlashMode.off
-                    ? Camera.Constants.FlashMode.on
-                    : Camera.Constants.FlashMode.off
-                )
-              }
-            />
-
-            <Button
-              // title=""
-              icon="retweet"
-              color={typeCamera === CameraType.back ? '#BDBDBD' : '#FF6C00'}
-              onPress={() => {
-                setTypeCamera(
-                  typeCamera === CameraType.back ? CameraType.front : CameraType.back
-                );
-              }}
-            />
-
-          </View>
-
-          <KeyboardAvoidingView
-            behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={20}
+          </ImageBackground>
+        ) : (
+          <Camera
+            style={styles.camera}
+            type={typeCamera}
+            ratio='4:3'
+            flashMode={flashCamera}
+            ref={cameraRef}
           >
+            <TouchableOpacity
+              style={styles.imageAddButton}
+              onPress={makePhoto}
+            >
+              <FontAwesome name='camera' size={24} color='#bdbdbd' />
+            </TouchableOpacity>
+          </Camera>
+        )}
 
-            <View style={styles.flexContainer}>
-              <TextInput
-                style={[styles.input, styles.margin32, focusedInput === 'photoName' && styles.isFocus]}
-                onFocus={() => setFocusedInput('photoName')}
-                onBlur={() => setFocusedInput(null)}
-                // style={styles.input}
-                placeholder='Назва...'
-                type={'text'}
-                name={'photoName'}
-                value={photoName}
-                onChangeText={setPhotoName}
-              />
+        <View style={styles.wrapImageText}>
 
-              <View style={styles.containerLocalIcon}>
-                <TouchableOpacity style={styles.boxLocalIcon} onPress={getAddress}>
-                  <Feather name='map-pin' size={24} color='#BDBDBD'
-                    style={[focusedInput === 'photoLocationName' && styles.isFocus]} />
-                </TouchableOpacity>
-                <TextInput
-                  style={[styles.input, styles.margin16, styles.locationPaddingLeft,
-                  focusedInput === 'photoLocationName' && styles.isFocus]}
-                  onFocus={() => setFocusedInput('photoLocationName')}
-                  onBlur={() => setFocusedInput(null)}
-                  placeholder='Місцевість...'
-                  type={'text'}
-                  name={'photoLocation'}
-                  value={address}
-                />
-              </View>
+          <TouchableOpacity onPress={choosePhoto} >
+            <Text style={styles.imageText}>
+              {postPhoto ? 'Редагувати фото' : 'Завантажте фото'}
+            </Text>
+          </TouchableOpacity>
 
-            </View>
+          <Button
+            icon="flash"
+            color={flashCamera === Camera.Constants.FlashMode.off ? '#BDBDBD' : '#FF6C00'}
+            onPress={() =>
+              setFlashCamera(
+                flashCamera === Camera.Constants.FlashMode.off
+                  ? Camera.Constants.FlashMode.on
+                  : Camera.Constants.FlashMode.off
+              )
+            }
+          />
 
-          </KeyboardAvoidingView>
+          <Button
+            icon="retweet"
+            color={typeCamera === CameraType.back ? '#BDBDBD' : '#FF6C00'}
+            onPress={() => {
+              setTypeCamera(
+                typeCamera === CameraType.back ? CameraType.front : CameraType.back
+              );
+            }}
+          />
+
         </View>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            postPhoto
-              ? {
-                color: '#FFFFFF',
-                backgroundColor: '#FF6C00',
-              }
-              : {
-                color: '#BDBDBD',
-                backgroundColor: '#F6F6F6',
-              },
-          ]}
-          activeOpacity={0.5}
-          onPress={handleSubmit}
+
+        <KeyboardAvoidingView
+          behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={20}
         >
-          <Text
-            style={[
-              styles.buttonText,
-              postPhoto ? { color: '#FFFFFF', } : { color: '#BDBDBD', },
-            ]}
+
+          <TextInput
+            style={[styles.input, styles.margin32, focusedInput === 'photoName' && styles.isFocus]}
+            onFocus={() => setFocusedInput('photoName')}
+            onBlur={() => setFocusedInput(null)}
+            placeholder='Назва...'
+            type={'text'}
+            name={'photoName'}
+            value={photoName}
+            onChangeText={setPhotoName}
+          />
+
+          <View style={styles.containerLocalIcon}>
+            <TouchableOpacity style={styles.boxLocalIcon} onPress={getAddress}>
+              <Feather name='map-pin' size={24} color='#BDBDBD'
+                style={[focusedInput === 'photoLocationName' && styles.isFocus]} />
+            </TouchableOpacity>
+            <TextInput
+              style={[styles.input, styles.margin16, styles.locationPaddingLeft,
+              focusedInput === 'photoLocationName' && styles.isFocus]}
+              onFocus={() => setFocusedInput('photoLocationName')}
+              onBlur={() => setFocusedInput(null)}
+              placeholder='Місцевість...'
+              type={'text'}
+              name={'photoLocation'}
+              value={address}
+            />
+          </View>
+          <TouchableOpacity
+            style={[styles.button,
+            postPhoto?.length && styles.buttonActive]}
+            activeOpacity={0.5}
+            onPress={handleSubmit}
           >
-            Опубліковати
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={[styles.buttonText,
+              postPhoto?.length && styles.buttonTextActive]}
+            >
+              Опублікувати
+            </Text>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+
+        <View style={styles.deleteIcon}>
+          <Feather name="trash-2" size={24} color="#BDBDBD"
+            onPress={deletePost}
+          />
+        </View>
       </View >
     </TouchableWithoutFeedback >
   )
 }
 
 const styles = StyleSheet.create({
-  CreatePostsScreenView: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 
-  flexContainer: {
-    flex: 1,
-  },
+
 
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     paddingTop: 31,
     marginTop: 1,
     paddingHorizontal: 16,
     paddingBottom: 34,
-  },
-
-  wrapContainer: {
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
   },
 
   camera: {
@@ -323,7 +310,7 @@ const styles = StyleSheet.create({
   wrapImageText: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: Dimensions.get('window').width - 32,
+    width: '100%',
   },
 
   imageText: {
@@ -336,8 +323,10 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
 
+
+
   input: {
-    width: Dimensions.get('window').width - 32,
+    width: '100%',
     height: 50,
     paddingVertical: 15,
     fontFamily: 'Roboto-Regular',
@@ -372,18 +361,44 @@ const styles = StyleSheet.create({
 
   button: {
     height: 51,
-    width: Dimensions.get('window').width - 32,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 100,
-    marginBottom: 220,
+    marginTop: 80,
+    color: '#BDBDBD',
+    backgroundColor: '#F6F6F6',
+
   },
+  buttonActive: {
+    color: '#FFFFFF',
+    backgroundColor: '#FF6C00',
+  },
+
   buttonText: {
     fontFamily: 'Roboto-Regular',
     fontSize: 16,
     fontWeight: '400',
+    color: '#BDBDBD',
   },
 
+  buttonTextActive: {
+    color: '#FFFFFF',
+  },
+
+
+  deleteIcon: {
+    width: 70,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F6F6F6',
+
+    paddingHorizontal: 23,
+    paddingVertical: 8,
+
+    marginTop: 'auto',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  },
 
   isFocus: {
     borderBottomColor: 'black',

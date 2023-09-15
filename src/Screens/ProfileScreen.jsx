@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import {
-  Dimensions,
   ImageBackground,
   ScrollView,
   StyleSheet,
@@ -14,8 +13,10 @@ import Posts from '../components/Post';
 import Photo_BG from '../images/Photo_BG.jpg';
 import newAvatar from '../images/userAvatarBig.jpg';
 
+import { postsData } from '../data/data';
+
 export default ProfileScreen = () => {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(postsData);
 
   const pickImage = async () => {
     try {
@@ -46,7 +47,7 @@ export default ProfileScreen = () => {
           <View style={styles.logOutIcon}>
             <HeaderIconBtnLogout />
           </View>
-    
+
           <View style={styles.avatarWrap}>
             <ImageBackground
               source={newAvatar}
@@ -68,23 +69,22 @@ export default ProfileScreen = () => {
           {posts?.length ? (
             posts.map(
               ({
-                url,
-                name,
+                id,
+                img,
+                title,
                 locationName,
-                geolocation,
                 likes,
-                creationTime,
                 comments,
                 email,
               }) => (
                 <Posts
-                  key={creationTime}
-                  photoUri={url}
-                  name={name}
-                  location={locationName}
+                  key={id}
+                  id={id}
+                  img={img}
+                  title={title}
+                  locationName={locationName}
                   likes={likes}
-                  geolocation={geolocation}
-                  id={creationTime}
+                  geolocation={locationName}
                   comments={comments}
                   email={email}
                 />
@@ -111,12 +111,11 @@ const styles = StyleSheet.create({
 
   container: {
     position: 'relative',
-    minHeight: Dimensions.get('window').height - 147,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     marginTop: 147,
     paddingHorizontal: 16,
-    paddingVertical: 92,
+    paddingTop: 92,
     backgroundColor: '#FFFFFF',
   },
 
