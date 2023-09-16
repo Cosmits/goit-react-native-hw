@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import {
+  FlatList,
   ImageBackground,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -17,6 +17,21 @@ import { postsData } from '../data/data';
 
 export default ProfileScreen = () => {
   const [posts, setPosts] = useState(postsData);
+
+  const renderItem = ({ item }) => (
+    <Posts
+      key={item.id}
+      id={item.id}
+      img={item.img}
+      title={item.title}
+      locationName={item.locationName}
+      likes={item.likes}
+      geolocation={item.locationName}
+      comments={item.comments}
+      email={item.email}
+    />
+  );
+
 
   const pickImage = async () => {
     try {
@@ -42,61 +57,40 @@ export default ProfileScreen = () => {
 
   return (
     <ImageBackground source={Photo_BG} style={styles.backgroundImage}>
-      <ScrollView>
-        <View style={styles.container}>
-          <View style={styles.logOutIcon}>
-            <HeaderIconBtnLogout />
-          </View>
-
-          <View style={styles.avatarWrap}>
-            <ImageBackground
-              source={newAvatar}
-              style={styles.avatar}
-            />
-
-            <View style={styles.icon}>
-              <AntDesign
-                name="pluscircleo"
-                size={25}
-                color="#FF6C00"
-                onPress={pickImage}
-              />
-            </View>
-          </View>
-
-          <Text style={styles.title}>Natali Romanova</Text>
-
-          {posts?.length ? (
-            posts.map(
-              ({
-                id,
-                img,
-                title,
-                locationName,
-                likes,
-                comments,
-                email,
-              }) => (
-                <Posts
-                  key={id}
-                  id={id}
-                  img={img}
-                  title={title}
-                  locationName={locationName}
-                  likes={likes}
-                  geolocation={locationName}
-                  comments={comments}
-                  email={email}
-                />
-              )
-            )
-          ) : (
-            <View style={styles.textWrapper}>
-              <Text style={styles.text}>No posts</Text>
-            </View>
-          )}
+      <View style={styles.container}>
+        <View style={styles.logOutIcon}>
+          <HeaderIconBtnLogout />
         </View>
-      </ScrollView>
+
+        <View style={styles.avatarWrap}>
+          <ImageBackground source={newAvatar} style={styles.avatar} />
+
+          <View style={styles.icon}>
+            <AntDesign
+              name="pluscircleo"
+              size={25}
+              color="#FF6C00"
+              onPress={pickImage}
+            />
+          </View>
+        </View>
+
+        <Text style={styles.title}>Natali Romanova</Text>
+
+        {posts?.length ? (
+          <FlatList
+          data={posts}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          style={styles.FlatList}
+          showsVerticalScrollIndicator={false} // This line hides the scrollbar
+          />
+        ) : (
+          <View style={styles.textWrapper}>
+            <Text style={styles.text}>No posts</Text>
+          </View>
+        )}
+      </View>
     </ImageBackground>
   );
 }
@@ -174,5 +168,9 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     textAlign: 'center',
     color: '#212121',
+  },
+
+  FlatList: {
+    marginBottom: 50,
   },
 });

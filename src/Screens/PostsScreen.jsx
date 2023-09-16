@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
 import Posts from '../components/Post';
 import UserAvatar from '../images/userAvatar.jpg'
 
@@ -7,6 +7,20 @@ import { postsData } from '../data/data';
 
 export default PostsScreen = () => {
   const [posts, setPosts] = useState(postsData);
+
+  const renderItem = ({ item }) => (
+    <Posts
+      key={item.id}
+      id={item.id}
+      img={item.img}
+      title={item.title}
+      locationName={item.locationName}
+      likes={null}
+      geolocation={item.locationName}
+      comments={item.comments}
+      email={item.email}
+    />
+  );
 
   return (
     <View style={styles.PostsScreenView}>
@@ -17,34 +31,18 @@ export default PostsScreen = () => {
           <Text style={styles.userEmail}>email@example.com</Text>
         </View>
       </View>
-      <ScrollView style={styles.scrollView} >
-        {posts?.length && (
-          posts.map(
-            ({
-              id,
-              img,
-              title,
-              locationName,
-              comments,
-              email,
-            }) => (
-              <Posts
-                key={id}
-                id={id}
-                img={img}
-                title={title}
-                locationName={locationName}
-                likes={null}
-                geolocation={locationName}
-                comments={comments}
-                email={email}
-              />
-            )
-          )
-        )}
-      </ScrollView>
+
+      {posts?.length ? (
+        <FlatList
+        data={posts}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        style={styles.FlatList}
+        showsVerticalScrollIndicator={false} // This line hides the scrollbar
+        />
+      ) : null}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -88,7 +86,7 @@ const styles = StyleSheet.create({
 
 
 
-  scrollView: {
+  FlatList: {
     display: 'flex',
     width: '100%',
     gap: 8,

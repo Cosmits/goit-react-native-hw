@@ -40,7 +40,7 @@ export default function Posts({
           </Text>
 
           {likes &&
-            (<View>
+            (<View style={styles.box}>
               <Feather
                 name="thumbs-up"
                 size={24}
@@ -49,7 +49,7 @@ export default function Posts({
                 onPress={addLike}
               />
               <Text style={styles.postsNumber}>{likes}</Text>
-            </View>)}
+            </View >)}
         </View>
         <View style={styles.box}>
           <Feather
