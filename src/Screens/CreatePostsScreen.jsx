@@ -6,10 +6,12 @@ import {
   StyleSheet, Text, TextInput,
   TouchableOpacity, TouchableWithoutFeedback
 } from 'react-native';
+import Spinner from 'react-native-loading-spinner-overlay';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
+import { format } from "date-fns";
 import { FontAwesome, Feather } from '@expo/vector-icons';
 import Button from '../components/Button';
 
@@ -27,7 +29,7 @@ export default CreatePostsScreen = () => {
   const cameraRef = useRef(null);
 
   const [address, setAddress] = useState('');
-  const [currentGeoLocation, setCurrentGeoLocation] = useState({});
+  const [currentGeoLocation, setCurrentGeoLocation] = useState(null);
 
   // =================================================================
   useEffect(() => {
@@ -35,8 +37,13 @@ export default CreatePostsScreen = () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         console.log("Permission to access location was denied");
+      } else {
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Highest,
+          maximumAge: 5000
+        });
+        setCurrentGeoLocation(location.coords)
       }
-
     })();
   }, []);
 
@@ -48,15 +55,15 @@ export default CreatePostsScreen = () => {
       setHasPermission(status === 'granted');
     })();
 
-
-    return () => {
-      cameraRef.current = null;
-      console.log('Unmounting phase: same when componentWillUnmount runs');
-    };
   }, []);
 
   if (!hasPermission) {
-    return <Text>No access to camera!</Text>;
+    // return <Text>No access to camera!</Text>;
+    return <Spinner
+      visible={!hasPermission}
+      textContent={'No access to camera!'}
+      textStyle={styles.spinnerTextStyle}
+    />
   }
 
   // =================================================================
@@ -73,7 +80,7 @@ export default CreatePostsScreen = () => {
 
   // =================================================================
   const clearForm = () => {
-    postPhoto(null);
+    setPostPhoto(null);
     setPhotoName('');
     setAddress('');
   };
@@ -102,33 +109,45 @@ export default CreatePostsScreen = () => {
   };
 
   // =================================================================
-  const getAddress = async () => {
+  const getLocation = async () => {
     const location = await Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.Highest,
-      maximumAge: 10000
+      maximumAge: 5000
     });
-    const reverseGeocode = await Location.reverseGeocodeAsync(location.coords);
-
-    const { street, streetNumber, city, postalCode, country } = reverseGeocode[0]
-    const address = `${street} ${streetNumber}, ${city}, ${postalCode}, ${country}`;
-
-    console.log("🚀 ~ file: CreatePostsScreen.jsx:115 ~ getAddress ~ address:", address)
-    console.log("🚀 ~ file: CreatePostsScreen.jsx:117 ~ getAddress ~ location.coords:", location.coords)
-    
     setCurrentGeoLocation(location.coords)
-    setAddress(address);
   }
 
   // =================================================================
-  const handleSubmit = () => {
+  const getAddress = async () => {
+
+    if (!currentGeoLocation) {
+      await getLocation()
+    } else {
+      const reverseGeocode = await Location.reverseGeocodeAsync(currentGeoLocation);
+
+      const { street, streetNumber, city, postalCode, country } = reverseGeocode[0]
+      const address = `${street} ${streetNumber}, ${city}, ${postalCode}, ${country}`;
+      setAddress(address);
+    }
+  }
+
+  // =================================================================
+  const handleSubmit = async () => {
+    const now = new Date();
+    const generatePhotoName = `Photo-${format(now, "yyyy-MM-dd HH:mm:ss") }` ;
+
+    if (!photoName.trim().length) setPhotoName(generatePhotoName);
+    if (!address) await getAddress();
     const data = {
       img: postPhoto,
-      description: photoName,
+      title: photoName,
       comments: [],
       likes: 0,
       address: address,
       geoLocation: currentGeoLocation,
     };
+
+    console.log("🚀 ~ file: CreatePostsScreen.jsx:147 ~ handleSubmit ~ data:", data)
     // posts data function
 
     clearForm();
@@ -138,9 +157,8 @@ export default CreatePostsScreen = () => {
   // =================================================================
 
   const deletePost = () => {
-    setPostPhoto('');
-    setName('');
-    setLocationName('');
+    if (postPhoto?.length) return;
+    clearForm();
   };
 
   return (
@@ -184,28 +202,28 @@ export default CreatePostsScreen = () => {
               {postPhoto ? 'Редагувати фото' : 'Завантажте фото'}
             </Text>
           </TouchableOpacity>
-
-          <Button
-            icon="flash"
-            color={flashCamera === Camera.Constants.FlashMode.off ? '#BDBDBD' : '#FF6C00'}
-            onPress={() =>
-              setFlashCamera(
-                flashCamera === Camera.Constants.FlashMode.off
-                  ? Camera.Constants.FlashMode.on
-                  : Camera.Constants.FlashMode.off
-              )
-            }
-          />
-
-          <Button
-            icon="retweet"
-            color={typeCamera === CameraType.back ? '#BDBDBD' : '#FF6C00'}
-            onPress={() => {
-              setTypeCamera(
-                typeCamera === CameraType.back ? CameraType.front : CameraType.back
-              );
-            }}
-          />
+          {(typeCamera === CameraType.back && !postPhoto) &&
+            <Button
+              icon="flash"
+              color={flashCamera === Camera.Constants.FlashMode.off ? '#BDBDBD' : '#FF6C00'}
+              onPress={() =>
+                setFlashCamera(
+                  flashCamera === Camera.Constants.FlashMode.off
+                    ? Camera.Constants.FlashMode.on
+                    : Camera.Constants.FlashMode.off
+                )
+              }
+            />}
+          {!postPhoto &&
+            <Button
+              icon="retweet"
+              color={typeCamera === CameraType.back ? '#BDBDBD' : '#FF6C00'}
+              onPress={() => {
+                setTypeCamera(
+                  typeCamera === CameraType.back ? CameraType.front : CameraType.back
+                );
+              }}
+            />}
 
         </View>
 
@@ -218,7 +236,7 @@ export default CreatePostsScreen = () => {
             style={[styles.input, styles.margin32, focusedInput === 'photoName' && styles.isFocus]}
             onFocus={() => setFocusedInput('photoName')}
             onBlur={() => setFocusedInput(null)}
-            placeholder='Назва...'
+            placeholder='Назва ...'
             type={'text'}
             name={'photoName'}
             value={photoName}
@@ -235,10 +253,11 @@ export default CreatePostsScreen = () => {
               focusedInput === 'photoLocationName' && styles.isFocus]}
               onFocus={() => setFocusedInput('photoLocationName')}
               onBlur={() => setFocusedInput(null)}
-              placeholder='Місцевість...'
+              placeholder='Місцевість ...'
               type={'text'}
               name={'photoLocation'}
               value={address}
+              onChangeText={setAddress}
             />
           </View>
           <TouchableOpacity
@@ -268,7 +287,9 @@ export default CreatePostsScreen = () => {
 
 const styles = StyleSheet.create({
 
-
+  spinnerTextStyle: {
+    color: '#BDBDBD',
+  },
 
   container: {
     flex: 1,

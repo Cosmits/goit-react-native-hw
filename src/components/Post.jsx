@@ -5,6 +5,7 @@ import {
   Text,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Posts({
   id,
@@ -16,6 +17,7 @@ export default function Posts({
   comments,
 }) {
 
+  const navigation = useNavigation();
   const addLike = () => {
     //add like
   };
@@ -34,6 +36,7 @@ export default function Posts({
             size={24}
             style={[styles.icon,
             comments?.length && styles.iconActive]}
+            onPress={() => { navigation.navigate('Comments', { img, id }) }}
           />
           <Text style={{ ...styles.postsNumber, marginRight: 24 }}>
             {comments?.length || 0}
