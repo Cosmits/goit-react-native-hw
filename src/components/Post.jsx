@@ -3,6 +3,7 @@ import {
   StyleSheet,
   View,
   Text,
+  TouchableOpacity,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -24,24 +25,27 @@ export default function Posts({
 
   return (
     <View style={styles.post}>
-      <ImageBackground source={img}
+      <ImageBackground
+        source={img}
         style={styles.image}
       >
       </ImageBackground>
       <Text style={styles.text}>{title}</Text>
       <View style={styles.infoBox}>
         <View style={styles.box}>
-          <Feather
-            name="message-circle"
-            size={24}
-            style={[styles.icon,
-            comments?.length && styles.iconActive]}
-            onPress={() => { navigation.navigate('Comments', { img, id }) }}
-          />
-          <Text style={{ ...styles.postsNumber, marginRight: 24 }}>
-            {comments?.length || 0}
-          </Text>
-
+          <TouchableOpacity
+            style={styles.box}
+            onPress={() => { navigation.navigate('Comments', { img, id }) }}>
+            <Feather
+              name="message-circle"
+              size={24}
+              style={[styles.icon,
+              comments?.length && styles.iconActive]}
+            />
+            <Text style={{ ...styles.postsNumber, marginRight: 24 }}>
+              {comments?.length || 0}
+            </Text>
+          </TouchableOpacity>
           {likes &&
             (<View style={styles.box}>
               <Feather
@@ -54,14 +58,18 @@ export default function Posts({
               <Text style={styles.postsNumber}>{likes}</Text>
             </View >)}
         </View>
-        <View style={styles.box}>
-          <Feather
-            name="map-pin"
-            size={24}
-            style={styles.icon}
-          />
-          <Text style={styles.locationText}>{locationName}</Text>
-        </View>
+
+        <TouchableOpacity
+          onPress={() => { navigation.navigate('Map', { geolocation, title }) }}>
+          <View style={styles.box}>
+            <Feather
+              name="map-pin"
+              size={24}
+              style={styles.icon}
+            />
+            <Text style={styles.locationText}>{locationName}</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

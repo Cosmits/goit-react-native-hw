@@ -6,6 +6,8 @@ import LoginScreen from '../Screens/LoginScreen';
 import BottomNavigator from './BottomNavіgator';
 import CommentsScreen from '../Screens/CommentsScreen';
 import MapScreen from '../Screens/MapScreen';
+import HeaderTittle from '../components/HeaderTittle';
+import HeaderIconBtnBack from '../components/HeaderIconBtnBack';
 
 
 export default RootNavigator = () => {
@@ -27,16 +29,21 @@ export default RootNavigator = () => {
         name="Comments"
         component={CommentsScreen}
         options={{
-          header: () => <Header title="Коментарі" />,
-          headerShown: 'true',
+          headerTitle: () => <HeaderTittle Tittle={"Коментарі"} />,
+          headerLeft: () => <HeaderIconBtnBack />,
+          headerStyle: { borderBottomWidth: 0.5, borderColor: "#0000004D" },
+          headerTitleAlign: "center",
+          headerShown: true,
         }}
       />
       <MainStack.Screen
         name="Map"
         component={MapScreen}
         options={{
-          header: () => <Header title="Карта" />,
-          headerShown: 'true',
+          headerTitle: () => <HeaderTittle Tittle={"Карта"} />,
+          headerLeft: () => <HeaderIconBtnBack />,
+          headerStyle: { borderBottomWidth: 0.5, borderColor: "#0000004D" },
+          headerTitleAlign: "center",
         }}
       />
     </MainStack.Navigator>

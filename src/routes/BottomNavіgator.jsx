@@ -1,9 +1,11 @@
 import { View, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Feather, Ionicons } from '@expo/vector-icons';
+
 import PostsScreen from '../Screens/PostsScreen';
 import ProfileScreen from '../Screens/ProfileScreen';
 import CreatePostsScreen from '../Screens/CreatePostsScreen';
+
 import HeaderTittle from '../components/HeaderTittle';
 import HeaderIconBtnBack from '../components/HeaderIconBtnBack';
 

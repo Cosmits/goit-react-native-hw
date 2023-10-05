@@ -16,7 +16,7 @@ export default PostsScreen = () => {
       title={item.title}
       locationName={item.locationName}
       likes={null}
-      geolocation={item.locationName}
+      geolocation={item.geolocation}
       comments={item.comments}
       email={item.email}
     />

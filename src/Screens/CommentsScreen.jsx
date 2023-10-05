@@ -8,20 +8,24 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { useRoute } from "@react-navigation/native";
+import { postsData } from '../data/data';
 
-
-export default CommentsScreen = ({ route }) => {
+export default CommentsScreen = () => {
   const [comment, setComment] = useState("");
   // const post = route?.params?.post;
 
-  const { params: { post } } = useRoute();
-  console.log("🚀 ~ file: CommentsScreen.jsx:18 ~ post:", post)
+  const route = useRoute();
+  const postImg = route?.params?.img
+  const postId = route?.params?.id
+  const reverseComment = postsData.filter(item => item.id === postId)[0].comments.reverse()
 
   const handleAddComment = () => {
     const now = new Date();
     const formattedDate = format(now, "dd MMMM, yyyy | HH:mm");
 
     //addComment
+    console.log(comment);
+    setComment(comment);
   };
 
   return (
@@ -35,65 +39,36 @@ export default CommentsScreen = ({ route }) => {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ImageBackground
               style={styles.image}
-              source={{ uri: post.postsUrl }}
+              source={postImg}
             ></ImageBackground>
           </TouchableWithoutFeedback>
           <FlatList
-            data={reversedDataComment}
-            keyExtractor={(item) => item.id}
+            data={reverseComment}
             renderItem={({ item }) => (
               <View
                 style={[
                   styles.mainCommentContainer,
-                  item.userId === auth.currentUser.uid && {
-                    flexDirection: "row-reverse",
-                  },
+                  item.user === "I" && { flexDirection: "row-reverse" },
                 ]}
               >
-                {item.userId === auth.currentUser.uid ? (
-                  !user.photoURL ? (
-                    <View
-                      style={[styles.userAvatar, styles.userAvatarColor]}
-                    ></View>
-                  ) : (
-                    <ImageBackground
-                      source={{ uri: user.photoURL }}
-                      style={styles.userAvatar}
-                    ></ImageBackground>
-                  )
-                ) : !item.userURL ? (
-                  <View
-                    style={[styles.userAvatar, styles.userAvatarColor]}
-                  ></View>
-                ) : (
-                  <ImageBackground
-                    source={{ uri: item.userURL }}
-                    style={styles.userAvatar}
-                  ></ImageBackground>
-                )}
-
-                <View
-                  style={[
-                    styles.commentContainer,
-                    item.userId === auth.currentUser.uid
-                      ? { borderTopLeftRadius: 6 }
-                      : { borderTopRightRadius: 6 },
-                  ]}
-                >
+                {/* <View style={styles.userAvatar}>
+                  <Text>{item.user}</Text>
+                </View> */}
+                <ImageBackground
+                  source={item.userAvatar}
+                  style={styles.userAvatar}
+                ></ImageBackground>
+                <View style={styles.commentContainer}>
                   <Text style={styles.commentText}>{item.text}</Text>
                   <Text
-                    style={[
-                      styles.dataTimeText,
-                      item.userId === auth.currentUser.uid
-                        ? { marginRight: "auto" }
-                        : { marginLeft: "auto" },
-                    ]}
+                    style={[styles.dataTimeText, item.user === "I" ? { marginRight: "auto" } : { marginLeft: "auto" }]}
                   >
-                    {item.dataTime}
+                    {item.date} | {item.time}
                   </Text>
                 </View>
               </View>
             )}
+            keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
           ></FlatList>
 
@@ -107,7 +82,8 @@ export default CommentsScreen = ({ route }) => {
             <TouchableOpacity
               style={styles.btnCommentInput}
               onPress={handleAddComment}
-            >              <AntDesign name="arrowup" size={20} color="#FFFFFF" />
+            >
+              <AntDesign name="arrowup" size={20} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
         </View>
