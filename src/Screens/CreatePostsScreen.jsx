@@ -26,6 +26,7 @@ export default CreatePostsScreen = () => {
   const [typeCamera, setTypeCamera] = useState(CameraType.back);
   const [flashCamera, setFlashCamera] = useState(Camera.Constants.FlashMode.off);
   const [hasPermission, setHasPermission] = useState(null);
+  const [pendingMakePhoto, setPendingMakePhoto] = useState(false);
   const cameraRef = useRef(null);
 
   const [address, setAddress] = useState('');
@@ -68,6 +69,7 @@ export default CreatePostsScreen = () => {
 
   // =================================================================
   const makePhoto = async () => {
+    setPendingMakePhoto(true);
     if (cameraRef) {
       try {
         const { uri } = await cameraRef.current.takePictureAsync();
@@ -76,13 +78,7 @@ export default CreatePostsScreen = () => {
         console.log('No access to Camera:', error)
       }
     }
-  };
-
-  // =================================================================
-  const clearForm = () => {
-    setPostPhoto(null);
-    setPhotoName('');
-    setAddress('');
+    setPendingMakePhoto(false);
   };
 
   // =================================================================
@@ -134,7 +130,7 @@ export default CreatePostsScreen = () => {
   // =================================================================
   const handleSubmit = async () => {
     const now = new Date();
-    const generatePhotoName = `Photo-${format(now, "yyyy-MM-dd HH:mm:ss") }` ;
+    const generatePhotoName = `Photo-${format(now, "yyyy-MM-dd HH:mm:ss")}`;
 
     if (!photoName.trim().length) setPhotoName(generatePhotoName);
     if (!address) await getAddress();
@@ -150,15 +146,16 @@ export default CreatePostsScreen = () => {
     console.log("🚀 ~ file: CreatePostsScreen.jsx:147 ~ handleSubmit ~ data:", data)
     // posts data function
 
-    clearForm();
+    deletePost();
     navigation.navigate('PostsScreen');
   };
 
   // =================================================================
 
   const deletePost = () => {
-    if (postPhoto?.length) return;
-    clearForm();
+    setPostPhoto(null);
+    setPhotoName('');
+    setAddress('');
   };
 
   return (
@@ -171,12 +168,12 @@ export default CreatePostsScreen = () => {
             source={{ uri: postPhoto }}
             style={styles.image}
           >
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.imageAddButton}
               onPress={makePhoto}
             >
               <FontAwesome name='camera' size={24} color='#FFFFFF' />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </ImageBackground>
         ) : (
           <Camera
@@ -192,6 +189,7 @@ export default CreatePostsScreen = () => {
             >
               <FontAwesome name='camera' size={24} color='#bdbdbd' />
             </TouchableOpacity>
+            <Spinner visible={pendingMakePhoto} />
           </Camera>
         )}
 
@@ -275,8 +273,11 @@ export default CreatePostsScreen = () => {
           </TouchableOpacity>
         </KeyboardAvoidingView>
 
-        <View style={styles.deleteIcon}>
-          <Feather name="trash-2" size={24} color="#BDBDBD"
+        <View style={[styles.deleteIcon,
+        postPhoto?.length && styles.buttonActive]}>
+          <Feather name="trash-2" size={24}
+            color="#BDBDBD"
+            style={[postPhoto?.length && styles.buttonTextActive]}
             onPress={deletePost}
           />
         </View>

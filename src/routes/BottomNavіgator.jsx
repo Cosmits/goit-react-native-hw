@@ -16,6 +16,7 @@ export default BottomNavigator = () => {
   return (
     <Tabs.Navigator
       screenOptions={({ route }) => ({
+        unmountOnBlur: true,
         tabBarIcon: ({ focused, color }) => {
           let iconName;
 
