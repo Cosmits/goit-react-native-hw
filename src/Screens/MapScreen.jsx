@@ -9,8 +9,7 @@ export default MapScreen = () => {
   const route = useRoute();
   const title = route?.params?.title
 
-  const geolocation = route?.params?.geolocation
-  const { latitude, longitude } = geolocation
+  const { latitude, longitude } = route?.params?.geolocation
 
   return (
     <View style={styles.container}>
