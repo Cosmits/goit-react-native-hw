@@ -26,7 +26,7 @@ export default ProfileScreen = () => {
       title={item.title}
       locationName={item.locationName}
       likes={item.likes}
-      geolocation={item.locationName}
+      geolocation={item.geolocation}
       comments={item.comments}
       email={item.email}
     />
