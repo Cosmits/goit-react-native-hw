@@ -4,56 +4,48 @@ import {
   Text, TextInput, TouchableOpacity,
   TouchableWithoutFeedback, View
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import imageBG from '../images/Photo_BG.jpg'
 import { useState } from 'react';
-import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import globalRegex from '../helpers/regexp';
+import Spinner from 'react-native-loading-spinner-overlay';
+import { selectError, selectIsLoading } from '../redux/selectors';
+import { useDispatch, useSelector } from 'react-redux';
+
+import imageBG from '../images/Photo_BG.jpg'
+import { UploadAvatar } from '../components/SelectAvatar';
+import { registerUser } from '../redux/authUser/authOperators';
 
 export default RegistrationScreen = () => {
 
   const [login, setLogin] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [imageBlob, setImageBlob] = useState(null);
 
   const [showPassword, setShowPassword] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
 
+  const errorRegister = useSelector(selectError);
+  const isLoading = useSelector(selectIsLoading);
+
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const handleRegister = () => {
-    console.log('Register:', {
-      login: login,
-      email: email,
-      password: password,
-    });
-    setLogin('');
-    setEmail('');
-    setPassword('');
+    if (!globalRegex.loginRegexp.test(login)) return dispatch(setError("Login is not valid"))
+    if (!globalRegex.emailRegexp.test(email)) return dispatch(setError("Email is not valid"))
+    if (!globalRegex.passwordRegexp.test(password)) return dispatch(setError("Password must contain min 6 symbol A-Z, a-z, 0-9"))
 
-    navigation.navigate('BottomNavigator');
+    dispatch(registerUser({ login, email, password, imageBlob }))
+
+    setLogin('')
+    setEmail('')
+    setPassword('')
+    setImageBlob('')
   };
 
-  const pickImage = async () => {
-    try {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-      if (status === 'granted') {
-        const result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.All,
-          allowsEditing: true,
-          aspect: [4, 3],
-          quality: 1,
-        });
-
-        // if (!result.canceled) {
-        //
-        // }
-      }
-    } catch (error) {
-      console.log('RegistrationScreen => ImagePicker: ', error.message);
-    }
+  const handleGetAvatar = (imageBlob) => {
+    setImageBlob(imageBlob);
   };
 
 
@@ -62,6 +54,10 @@ export default RegistrationScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.flexContainer} >
 
       <View style={{ ...styles.container, ...styles.flexContainer }}>
+        <Spinner
+          visible={isLoading}
+          textContent={'Loading...'}
+          textStyle={{ color: '#BDBDBD' }} />
         <ImageBackground style={styles.bgImage} source={imageBG} >
 
           <KeyboardAvoidingView style={styles.flexContainer}
@@ -71,19 +67,9 @@ export default RegistrationScreen = () => {
             <View style={{ ...styles.wrapContainer, ...styles.flexContainer }}>
 
               <View style={{ ...styles.boxAuth, }}>
-                
-                <View style={styles.avatarBox}>
-                  <TouchableOpacity style={styles.plusBtn} onPress={pickImage}>
-                    <AntDesign
-                      name='pluscircleo'
-                      style={styles.pluscircleo}
-                      size={25}
-                    />
-                  </TouchableOpacity>
-                </View>
-
+                <UploadAvatar getAvatar={handleGetAvatar} />
+          
                 <Text style={styles.title}>Реєстрація</Text>
-
                 <View style={styles.inputContainer}>
 
                   <TextInput
@@ -92,8 +78,8 @@ export default RegistrationScreen = () => {
                     onBlur={() => setFocusedInput(null)}
                     value={login}
                     onChangeText={setLogin}
-                    placeholder='Логін'
-                  ></TextInput>
+                    placeholder='Логін' >
+                  </TextInput>
 
                   <TextInput
                     style={[styles.inputData, focusedInput === 'email' && styles.isFocus]}
@@ -103,8 +89,8 @@ export default RegistrationScreen = () => {
                     keyboardType='email-address'
                     autoCapitalize='none'
                     onChangeText={setEmail}
-                    placeholder='Адреса електронної пошти'
-                  ></TextInput>
+                    placeholder='Адреса електронної пошти' >
+                  </TextInput>
 
                   <View style={styles.divPassword}>
                     <TextInput
@@ -117,8 +103,7 @@ export default RegistrationScreen = () => {
                       value={password}
                       onChangeText={setPassword}
                       placeholder='Пароль'
-                      secureTextEntry={!showPassword}
-                    >
+                      secureTextEntry={!showPassword} >
                     </TextInput>
 
                     <TouchableOpacity
@@ -127,19 +112,18 @@ export default RegistrationScreen = () => {
                       <Text style={styles.showPasswordTextStyle}>{showPassword ? 'Приховати' : 'Показати'}</Text>
                     </TouchableOpacity>
                   </View>
+                  {errorRegister && <Text style={styles.errorTitle}>{errorRegister}</Text>}
 
                 </View>
 
                 <TouchableOpacity style={styles.btnRegister}
-                  onPress={handleRegister}
-                >
+                  onPress={handleRegister} >
                   <Text style={styles.btnRegisterText}>Зареєструватися</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   style={styles.btnLogin}
-                  onPress={() => navigation.navigate('LoginScreen')}
-                >
+                  onPress={() => navigation.navigate('LoginScreen')} >
                   <Text style={styles.btnLoginText}>Вже є аккаунт? Увійти</Text>
                 </TouchableOpacity>
 
@@ -181,7 +165,6 @@ const styles = StyleSheet.create({
     paddingBottom: 78,
   },
 
-
   avatarBox: {
     width: 120,
     height: 120,
@@ -190,8 +173,6 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     borderRadius: 16,
     marginTop: -60,
-    
-
   },
 
   plusBtn: {
@@ -208,7 +189,6 @@ const styles = StyleSheet.create({
     color: '#FF6C00',
   },
 
-
   title: {
     marginTop: 32,
     backgroundColor: '#ffffff',
@@ -221,6 +201,12 @@ const styles = StyleSheet.create({
     lineHeight: 35,
   },
 
+  errorTitle: {
+    color: '#FF0000',
+    fontFamily: 'Roboto-Medium',
+    fontSize: 14,
+    textAlign: 'center',
+  },
 
   inputContainer: {
     paddingTop: 32,
@@ -275,7 +261,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginRight: 'auto',
     marginLeft: 'auto',
-
   },
 
   btnLogin: {

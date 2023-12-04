@@ -24,13 +24,11 @@ export default MapScreen = () => {
         mapType="standard"
         minZoomLevel={15}
         onMapReady={() => console.log("Map is ready")}
-        onRegionChange={() => console.log("Region change")}
-      >
+        onRegionChange={() => console.log("Region change")} >
         <Marker
           title="I am here"
           coordinate={{ latitude: latitude, longitude: longitude }}
-          description={title}
-        />
+          description={title} />
       </MapView>
     </View>
   );
@@ -43,6 +41,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  
   mapStyle: {
     width: '100%',
     height: '100%',

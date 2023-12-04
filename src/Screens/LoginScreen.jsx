@@ -7,35 +7,46 @@ import {
 import imageBG from '../images/Photo_BG.jpg'
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { loginUser } from '../redux/authUser/authOperators';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectError, selectIsLoading } from '../redux/selectors';
+import globalRegex from '../helpers/regexp';
+import { setError } from '../redux/authUser/authSlice';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 
 export default LoginScreen = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
+  const errorLogin = useSelector(selectError);
+  const isLoading = useSelector(selectIsLoading);
 
   const [showPassword, setShowPassword] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const handleLogin = () => {
-    console.log('Login:', {
-      email: email,
-      password: password,
-    });
-    setEmail('');
-    setPassword('');
-    
-    navigation.navigate('BottomNavigator');
+
+    if (!globalRegex.emailRegexp.test(email)) return dispatch(setError("Email is not valid"))
+    if (!globalRegex.passwordRegexp.test(password)) return dispatch(setError("Password must contain min 6 symbol A-Z, a-z, 0-9"))
+
+    dispatch(loginUser({ email, password })) 
+    setPassword('')
   };
 
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.flexContainer} >
 
-
       <View style={{ ...styles.container, ...styles.flexContainer }}>
+        <Spinner
+          visible={isLoading}
+          textContent={'Loading...'}
+          textStyle={{ color: '#BDBDBD' }} />
         <ImageBackground style={styles.bgImage} source={imageBG} >
 
           <KeyboardAvoidingView style={styles.flexContainer}
@@ -56,8 +67,8 @@ export default LoginScreen = () => {
                     onBlur={() => setFocusedInput(null)}
                     value={email}
                     onChangeText={setEmail}
-                    placeholder='Адреса електронної пошти'
-                  ></TextInput>
+                    placeholder='Адреса електронної пошти' >
+                    </TextInput>
 
                   <View style={styles.divPassword}>
                     <TextInput
@@ -70,8 +81,7 @@ export default LoginScreen = () => {
                       value={password}
                       onChangeText={setPassword}
                       placeholder='Пароль'
-                      secureTextEntry={!showPassword}
-                    >
+                      secureTextEntry={!showPassword} >
                     </TextInput>
 
                     <TouchableOpacity
@@ -80,19 +90,18 @@ export default LoginScreen = () => {
                       <Text style={styles.showPasswordTextStyle}>{showPassword ? 'Приховати' : 'Показати'}</Text>
                     </TouchableOpacity>
                   </View>
+                  {errorLogin && <Text style={styles.errorTitle}>{errorLogin}</Text>}
 
                 </View>
 
                 <TouchableOpacity style={styles.btnRegister}
-                  onPress={handleLogin}
-                >
+                  onPress={handleLogin} >
                   <Text style={styles.btnRegisterText}>Увійти</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   style={styles.btnLogin}
-                  onPress={() => navigation.navigate('RegistrationScreen')}
-                >
+                  onPress={() => navigation.navigate('RegistrationScreen')} >
                   <Text style={styles.btnLoginText}>Немає аккаунту? Зареєструватися</Text>
                 </TouchableOpacity>
 
@@ -161,7 +170,6 @@ const styles = StyleSheet.create({
     color: '#FF6C00',
   },
 
-
   title: {
     marginTop: 32,
     backgroundColor: '#ffffff',
@@ -174,6 +182,12 @@ const styles = StyleSheet.create({
     lineHeight: 35,
   },
 
+  errorTitle: {
+    color: '#FF0000',
+    fontFamily: 'Roboto-Medium',
+    fontSize: 14,
+    textAlign: 'center',
+  },
 
   inputContainer: {
     paddingTop: 32,
@@ -230,7 +244,6 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
 
   },
-
 
   btnLogin: {
     marginTop: 16,

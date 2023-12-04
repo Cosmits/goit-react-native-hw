@@ -63,7 +63,7 @@ export default CreatePostsScreen = () => {
     return <Spinner
       visible={!hasPermission}
       textContent={'No access to camera!'}
-      textStyle={styles.spinnerTextStyle}
+      textStyle={{ color: '#BDBDBD' }}
     />
   }
 
@@ -151,7 +151,6 @@ export default CreatePostsScreen = () => {
   };
 
   // =================================================================
-
   const deletePost = () => {
     setPostPhoto(null);
     setPhotoName('');
@@ -166,12 +165,10 @@ export default CreatePostsScreen = () => {
         {postPhoto ? (
           <ImageBackground
             source={{ uri: postPhoto }}
-            style={styles.image}
-          >
+            style={styles.image} >
             {/* <TouchableOpacity
               style={styles.imageAddButton}
-              onPress={makePhoto}
-            >
+              onPress={makePhoto} >
               <FontAwesome name='camera' size={24} color='#FFFFFF' />
             </TouchableOpacity> */}
           </ImageBackground>
@@ -181,15 +178,14 @@ export default CreatePostsScreen = () => {
             type={typeCamera}
             ratio='4:3'
             flashMode={flashCamera}
-            ref={cameraRef}
-          >
+            ref={cameraRef} >
             <TouchableOpacity
               style={styles.imageAddButton}
-              onPress={makePhoto}
-            >
+              onPress={makePhoto} >
               <FontAwesome name='camera' size={24} color='#bdbdbd' />
             </TouchableOpacity>
-            <Spinner visible={pendingMakePhoto} />
+            <Spinner visible={pendingMakePhoto}
+              textStyle={{ color: '#BDBDBD' }} />
           </Camera>
         )}
 
@@ -211,7 +207,8 @@ export default CreatePostsScreen = () => {
                     : Camera.Constants.FlashMode.off
                 )
               }
-            />}
+            />
+          }
           {!postPhoto &&
             <Button
               icon="retweet"
@@ -221,14 +218,13 @@ export default CreatePostsScreen = () => {
                   typeCamera === CameraType.back ? CameraType.front : CameraType.back
                 );
               }}
-            />}
-
+            />
+          }
         </View>
 
         <KeyboardAvoidingView
           behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={20}
-        >
+          keyboardVerticalOffset={20} >
 
           <TextInput
             style={[styles.input, styles.margin32, focusedInput === 'photoName' && styles.isFocus]}
@@ -238,8 +234,7 @@ export default CreatePostsScreen = () => {
             type={'text'}
             name={'photoName'}
             value={photoName}
-            onChangeText={setPhotoName}
-          />
+            onChangeText={setPhotoName} />
 
           <View style={styles.containerLocalIcon}>
             <TouchableOpacity style={styles.boxLocalIcon} onPress={getAddress}>
@@ -255,19 +250,17 @@ export default CreatePostsScreen = () => {
               type={'text'}
               name={'photoLocation'}
               value={address}
-              onChangeText={setAddress}
-            />
+              onChangeText={setAddress} />
           </View>
+
           <TouchableOpacity
             style={[styles.button,
             postPhoto?.length && styles.buttonActive]}
             activeOpacity={0.5}
-            onPress={handleSubmit}
-          >
+            onPress={handleSubmit} >
             <Text
               style={[styles.buttonText,
-              postPhoto?.length && styles.buttonTextActive]}
-            >
+              postPhoto?.length && styles.buttonTextActive]} >
               Опублікувати
             </Text>
           </TouchableOpacity>
@@ -278,8 +271,7 @@ export default CreatePostsScreen = () => {
           <Feather name="trash-2" size={24}
             color="#BDBDBD"
             style={[postPhoto?.length && styles.buttonTextActive]}
-            onPress={deletePost}
-          />
+            onPress={deletePost} />
         </View>
       </View >
     </TouchableWithoutFeedback >
@@ -345,8 +337,6 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
 
-
-
   input: {
     width: '100%',
     height: 50,
@@ -407,7 +397,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 
-
   deleteIcon: {
     width: 70,
     height: 40,
@@ -427,4 +416,4 @@ const styles = StyleSheet.create({
     color: 'black',
   },
 
-});
+})

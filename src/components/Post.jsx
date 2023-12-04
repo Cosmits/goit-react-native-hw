@@ -27,8 +27,7 @@ export default function Posts({
     <View style={styles.post}>
       <ImageBackground
         source={img}
-        style={styles.image}
-      >
+        style={styles.image} >
       </ImageBackground>
       <Text style={styles.text}>{title}</Text>
       <View style={styles.infoBox}>
@@ -40,8 +39,7 @@ export default function Posts({
               name="message-circle"
               size={24}
               style={[styles.icon,
-              comments?.length && styles.iconActive]}
-            />
+              comments?.length && styles.iconActive]} />
             <Text style={{ ...styles.postsNumber, marginRight: 24 }}>
               {comments?.length || 0}
             </Text>
@@ -53,8 +51,7 @@ export default function Posts({
                 size={24}
                 style={[styles.icon,
                 likes > 0 && styles.iconActive]}
-                onPress={addLike}
-              />
+                onPress={addLike} />
               <Text style={styles.postsNumber}>{likes}</Text>
             </View >)}
         </View>
@@ -65,8 +62,7 @@ export default function Posts({
             <Feather
               name="map-pin"
               size={24}
-              style={styles.icon}
-            />
+              style={styles.icon} />
             <Text style={styles.locationText}>{locationName}</Text>
           </View>
         </TouchableOpacity>

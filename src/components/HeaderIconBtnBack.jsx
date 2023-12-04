@@ -5,12 +5,11 @@ import { useNavigation } from '@react-navigation/native';
 export default HeaderIconBtnBack = () => {
 
   const navigation = useNavigation();
-  
+
   return (
     <TouchableOpacity
       style={styles.HeaderIconBtnBack}
-      onPress={() => navigation.navigate('PostsScreen')}
-    >
+      onPress={() => navigation.navigate('PostsScreen')} >
       <Feather name='arrow-left' size={24} color='#212121CC' />
     </TouchableOpacity>
   );

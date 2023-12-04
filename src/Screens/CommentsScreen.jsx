@@ -33,14 +33,13 @@ export default CommentsScreen = () => {
       <KeyboardAvoidingView
         style={styles.flexContainer}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={100}
-      >
+        keyboardVerticalOffset={100} >
         <View style={styles.inner}>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <ImageBackground
               style={styles.image}
-              source={postImg}
-            ></ImageBackground>
+              source={postImg} >
+            </ImageBackground>
           </TouchableWithoutFeedback>
           <FlatList
             data={reverseComment}
@@ -49,15 +48,14 @@ export default CommentsScreen = () => {
                 style={[
                   styles.mainCommentContainer,
                   item.user === "I" && { flexDirection: "row-reverse" },
-                ]}
-              >
+                ]} >
                 {/* <View style={styles.userAvatar}>
                   <Text>{item.user}</Text>
                 </View> */}
                 <ImageBackground
                   source={item.userAvatar}
-                  style={styles.userAvatar}
-                ></ImageBackground>
+                  style={styles.userAvatar} >
+                </ImageBackground>
                 <View style={styles.commentContainer}>
                   <Text style={styles.commentText}>{item.text}</Text>
                   <Text
@@ -69,20 +67,19 @@ export default CommentsScreen = () => {
               </View>
             )}
             keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-          ></FlatList>
+            showsVerticalScrollIndicator={false} >
+          </FlatList>
 
           <View style={styles.boxComment}>
             <TextInput
               style={styles.commentInput}
               placeholder="Коментувати..."
               value={comment}
-              onChangeText={setComment}
-            ></TextInput>
+              onChangeText={setComment} >
+            </TextInput>
             <TouchableOpacity
               style={styles.btnCommentInput}
-              onPress={handleAddComment}
-            >
+              onPress={handleAddComment} >
               <AntDesign name="arrowup" size={20} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
@@ -116,18 +113,21 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginVertical: 32,
   },
+
   publishedBox: {
     backgroundColor: "#E8E8E8",
     height: 240,
     borderRadius: 8,
     marginVertical: 32,
   },
+
   boxComment: {
     position: "relative",
     marginTop: "auto",
     marginBottom: 16,
     paddingTop: 16,
   },
+
   commentInput: {
     backgroundColor: "#F6F6F6",
     fontFamily: "Roboto-Medium",
@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     color: "#212121",
   },
+
   btnCommentInput: {
     position: "absolute",
     width: 34,
@@ -153,10 +154,12 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -1 }],
     right: 8,
   },
+
   mainCommentContainer: {
     flexDirection: "row",
     columnGap: 16,
   },
+
   userAvatar: {
     width: 28,
     height: 28,
@@ -166,7 +169,11 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     alignItems: "center",
   },
-  userAvatarColor: { backgroundColor: "#00000008" },
+
+  userAvatarColor: {
+    backgroundColor: "#00000008"
+  },
+  
   commentContainer: {
     backgroundColor: "#00000008",
     padding: 16,
@@ -175,12 +182,14 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 6,
     borderBottomRightRadius: 6,
   },
+
   commentText: {
     color: "#212121",
     fontFamily: "Roboto-Regular",
     fontSize: 13,
     lineHeight: 18,
   },
+  
   dataTimeText: {
     fontFamily: "Roboto-Regular",
     fontSize: 10,

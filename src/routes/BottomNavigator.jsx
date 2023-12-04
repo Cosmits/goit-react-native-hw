@@ -9,7 +9,6 @@ import CreatePostsScreen from '../Screens/CreatePostsScreen';
 import HeaderTittle from '../components/HeaderTittle';
 import HeaderIconBtnBack from '../components/HeaderIconBtnBack';
 
-
 const Tabs = createBottomTabNavigator();
 
 export default BottomNavigator = () => {
@@ -38,8 +37,7 @@ export default BottomNavigator = () => {
                   width: 70,
                   height: 40,
                   borderRadius: 20,
-                }}
-              >
+                }} >
                 <Feather name={'plus'} size={24} color={color} />
               </View>
             )
@@ -52,8 +50,7 @@ export default BottomNavigator = () => {
         headerLeftContainerStyle: { paddingLeft: 16, paddingBottom: 9 },
         tabBarStyle: { height: 70, justifyContent: 'center' },
         tabBarShowLabel: false,
-      })}
-    >
+      })} >
       <Tabs.Screen name='PostsScreen' component={PostsScreen}
         options={{
           headerShown: true,

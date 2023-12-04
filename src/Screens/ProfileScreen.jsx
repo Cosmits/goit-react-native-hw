@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import * as ImagePicker from 'expo-image-picker';
 import {
   FlatList,
   ImageBackground,
@@ -7,15 +6,19 @@ import {
   Text,
   View,
 } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
+
 import HeaderIconBtnLogout from '../components/HeaderIconBtnLogout';
 import Posts from '../components/Post';
 import Photo_BG from '../images/Photo_BG.jpg';
-import newAvatar from '../images/userAvatarBig.jpg';
-
 import { postsData } from '../data/data';
+import { selectUser } from '../redux/selectors';
+import { UploadAvatar } from '../components/SelectAvatar';
 
 export default ProfileScreen = () => {
+  const user = useSelector(selectUser);
+  const [imageBlob, setImageBlob] = useState(null);
+
   const [posts, setPosts] = useState(postsData);
 
   const renderItem = ({ item }) => (
@@ -28,31 +31,11 @@ export default ProfileScreen = () => {
       likes={item.likes}
       geolocation={item.geolocation}
       comments={item.comments}
-      email={item.email}
-    />
+      email={item.email} />
   );
 
-
-  const pickImage = async () => {
-    try {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-      if (status === 'granted') {
-        const result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.All,
-          allowsEditing: true,
-          aspect: [4, 3],
-          quality: 1,
-        });
-
-        // if (!result.canceled) {
-        //
-        // }
-      }
-    } catch (error) {
-      console.log('ProfileScreen => ImagePicker: ', error.message);
-    }
+  const handleGetAvatar = (imageBlob) => {
+    setImageBlob(imageBlob);
   };
 
   return (
@@ -63,28 +46,22 @@ export default ProfileScreen = () => {
         </View>
 
         <View style={styles.avatarWrap}>
-          <ImageBackground source={newAvatar} style={styles.avatar} />
-
-          <View style={styles.icon}>
-            <AntDesign
-              name="pluscircleo"
-              size={25}
-              color="#FF6C00"
-              onPress={pickImage}
-            />
-          </View>
+          <UploadAvatar
+            getAvatar={handleGetAvatar}
+            propImage={user?.photoURL}
+            dynamicMargin={0} />
         </View>
 
-        <Text style={styles.title}>Natali Romanova</Text>
+        <Text style={styles.title}>{user?.displayName}</Text>
 
         {posts?.length ? (
           <FlatList
-          data={posts}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          style={styles.FlatList}
-          showsVerticalScrollIndicator={false} // This line hides the scrollbar
-          />
+            data={posts}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+            style={styles.FlatList}
+            // This line hides the scrollbar
+            showsVerticalScrollIndicator={false} />
         ) : (
           <View style={styles.textWrapper}>
             <Text style={styles.text}>No posts</Text>
@@ -124,14 +101,7 @@ const styles = StyleSheet.create({
     top: -60,
     left: '50%',
     transform: [{ translateX: -50 }],
-  },
 
-  avatar: {
-    width: 120,
-    height: 120,
-    backgroundColor: '#F6F6F6',
-    borderRadius: 16,
-    overflow: 'hidden',
   },
 
   icon: {
