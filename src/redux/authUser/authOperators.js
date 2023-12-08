@@ -1,5 +1,6 @@
 import {
   createUserWithEmailAndPassword,
+  sendEmailVerification,
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
@@ -21,6 +22,21 @@ const uploadAvatar = async (storageRef, file) => {
   } catch (error) {
     error.statusError = true
     return error
+  }
+};
+
+const formatUserObj = (user) => {
+  return {
+    uid: user.uid,
+    email: user.email,
+    emailVerified: user.emailVerified,
+    displayName: user.displayName,
+    isAnonymous: user.isAnonymous,
+    photoURL: user.photoURL,
+    createdAt: user.createdAt,
+    lastLoginAt: user.lastLoginAt,
+    apiKey: user.apiKey,
+    appName: user.appName,
   }
 };
 
@@ -49,18 +65,7 @@ export const registerUser = createAsyncThunk(
         photoURL,
       });
 
-      return {
-        uid: auth.currentUser.uid,
-        email: auth.currentUser.email,
-        emailVerified: auth.currentUser.emailVerified,
-        displayName: auth.currentUser.displayName,
-        isAnonymous: auth.currentUser.isAnonymous,
-        photoURL: auth.currentUser.photoURL,
-        createdAt: auth.currentUser.createdAt,
-        lastLoginAt: auth.currentUser.lastLoginAt,
-        apiKey: auth.currentUser.apiKey,
-        appName: auth.currentUser.appName,
-      }
+      return formatUserObj(auth.currentUser)
 
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -82,18 +87,7 @@ export const loginUser = createAsyncThunk(
       // console.log(JSON.stringify(auth.currentUser, undefined, 4));
       // console.log(JSON.stringify(userCredential._tokenResponse, undefined, 4));
 
-      return {
-        uid: auth.currentUser.uid,
-        email: auth.currentUser.email,
-        emailVerified: auth.currentUser.emailVerified,
-        displayName: auth.currentUser.displayName,
-        isAnonymous: auth.currentUser.isAnonymous,
-        photoURL: auth.currentUser.photoURL,
-        createdAt: auth.currentUser.createdAt,
-        lastLoginAt: auth.currentUser.lastLoginAt,
-        apiKey: auth.currentUser.apiKey,
-        appName: auth.currentUser.appName,
-      }
+      return formatUserObj(auth.currentUser)
 
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -116,13 +110,14 @@ export const logoutUser = createAsyncThunk(
 export const updateUserData = createAsyncThunk(
   "auth/updateUserData",
   async (currentUser) => {
-    return currentUser;
+    return formatUserObj(currentUser)
   }
 );
 
+//================================================================
 export const updateUserAvatar = createAsyncThunk(
-  "auth/addUserAvatar",
-  async ({ uploadBlob = null, delImg = null }, thunkAPI) => {
+  "auth/updateUserAvatar",
+  async ({ uploadBlob = null, delImg = '' }, thunkAPI) => {
     try {
       let photoURL = '';
       if (uploadBlob) {
@@ -139,13 +134,26 @@ export const updateUserAvatar = createAsyncThunk(
       const user = auth.currentUser;
       if (user) {
         await updateProfile(user, {
-          photoURL,
+          photoURL
         });
         await user.reload();
       }
-      
-      return user.photoURL
-      
+
+      return formatUserObj(auth.currentUser)
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+//================================================================
+export const sendVerifyEmail = createAsyncThunk(
+  "auth/sendVerifyEmail",
+  async (thunkAPI) => {
+    try {
+      await sendEmailVerification(auth.currentUser)
+
+      return "Email verification sent successfully !";
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }

@@ -6,11 +6,12 @@ import {
   logoutUser,
   updateUserData,
   updateUserAvatar,
+  sendVerifyEmail,
 } from "./authOperators"
 
 const userInitialState = {
   user: null,
-  isLoading: false,
+  isLoading: true,
   error: null,
 }
 
@@ -87,6 +88,7 @@ const authSlice = createSlice({
       .addCase(updateUserData.rejected, (state) => {
         state.isLoading = false;
         state.error = action.payload;
+        state.user = null;
       })
 
       //================================================================
@@ -96,9 +98,23 @@ const authSlice = createSlice({
       })
       .addCase(updateUserAvatar.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user.photoURL = action.payload;
+        state.user = action.payload;
       })
       .addCase(updateUserAvatar.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+        state.user = null;
+      })
+    
+      //================================================================
+      .addCase(sendVerifyEmail.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(sendVerifyEmail.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(sendVerifyEmail.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })

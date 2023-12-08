@@ -7,6 +7,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { persistor, store } from './src/redux/store';
+import Toast from 'react-native-easy-toast';
 
 export default App = () => {
 
@@ -30,6 +31,12 @@ export default App = () => {
           textStyle={{ color: '#BDBDBD' }} />}>
         <NavigationContainer>
           <RootNavigator />
+          <Toast
+            ref={(toast) => (this.toast = toast)}
+            // style={{ backgroundColor: "red" }}
+            // position="top"
+            // textStyle={{ color: "white", fontSize: 25 }}
+          />
         </NavigationContainer>
       </PersistGate>
     </Provider>

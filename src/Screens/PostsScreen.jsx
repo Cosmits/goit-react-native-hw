@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Alert } from 'react-native';
 import Posts from '../components/Post';
 
 import { postsData } from '../data/data';
 import { selectUser } from '../redux/selectors';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Feather } from '@expo/vector-icons';
+import { sendVerifyEmail } from '../redux/authUser/authOperators';
 
 export default PostsScreen = () => {
 
   const user = useSelector(selectUser);
+  const dispatch = useDispatch();
 
   const [posts, setPosts] = useState(postsData);
 
@@ -26,11 +28,30 @@ export default PostsScreen = () => {
       email={item.email} />
   );
 
+  const handleSendVerifyEmail = () => { 
+   Alert.alert(
+      "Verify email",
+      "Send email for verification ?",
+      [
+        {
+          text: "OK",
+          onPress: () => dispatch(sendVerifyEmail())
+        },
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+      ]
+    );
+  }
+
   return (
     <View style={styles.PostsScreenView}>
       <View style={styles.userContainer}>
-        {user?.photoURL ? (<Image style={styles.avatarImg}
-          source={{ uri: user?.photoURL }} />
+        {user?.photoURL ? (
+          <Image style={styles.avatarImg}
+            source={{ uri: user?.photoURL }} />
         ) : (
           <View style={[styles.photoBox,]}>
             <Feather name='user' size={36} color='#212121CC' style={styles.avatar} />
@@ -41,6 +62,24 @@ export default PostsScreen = () => {
           <Text style={styles.userName}>{user?.displayName}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
         </View>
+
+        {user?.email.includes("@gmail.com") &&
+          <View style={styles.emailInfo}>
+            {user?.emailVerified ? (
+              <View style={[styles.userEmailBox]}>
+                <Feather name="check-circle" size={24} color="black" />
+              </View>
+            ) : (
+
+              <TouchableOpacity
+                style={styles.HeaderIconBtnBack}
+                  onPress={handleSendVerifyEmail} >
+                <Feather name='alert-triangle' size={24} color='#FFFFFF' left={31} />
+                <Text style={styles.verifyEmailBtn}>Verify email</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        }
       </View>
 
       {posts?.length ? (
@@ -123,4 +162,31 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 32,
   },
+
+  emailInfo: {
+    marginLeft: 'auto',
+    fontWeight: '700',
+    borderRadius: 16,
+    // borderWidth: 1,
+    backgroundColor: '#FF6C00',
+  },
+
+  verifyEmailBtn: {
+    marginLeft: 8,
+    marginRight: 8,
+    color: '#FFFFFF',
+  },
+  HeaderIconBtnBack: {
+    // left: 16,
+    // marginLeft: 'auto',
+    // marginRight: 'auto', 
+    marginBottom: 2,
+    marginTop: 2,
+  },
+
+  userEmailBox: {
+    backgroundColor: '#FFFFFF',
+    // right: 12,
+  }
+
 });

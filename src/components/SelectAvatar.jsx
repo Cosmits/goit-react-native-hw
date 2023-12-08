@@ -8,8 +8,8 @@ import {
 } from "react-native";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { uriToBlob, compressImage } from "../helpers/img";
-import { selectUser } from "../redux/selectors";
+import { uriToBlob, compressImage, urlToBlob } from "../helpers/img";
+import { selectPhotoURL, selectUser } from "../redux/selectors";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUserAvatar } from "../redux/authUser/authOperators";
 
@@ -17,6 +17,7 @@ import { updateUserAvatar } from "../redux/authUser/authOperators";
 export const UploadAvatar = ({ getAvatar, propImage = null, dynamicMargin = -60 }) => {
 
   const user = useSelector(selectUser);
+  const photoURL = useSelector(selectPhotoURL)
   const dispatch = useDispatch();
 
   const [image, setImage] = useState(propImage);
@@ -68,7 +69,7 @@ export const UploadAvatar = ({ getAvatar, propImage = null, dynamicMargin = -60 
     setImage(null);
     setImageBlob(null);
     //del image
-    if (user?.displayName) dispatch(updateUserAvatar({ delImg: user.photoURL }))
+    if (photoURL) dispatch(updateUserAvatar({ delImg: photoURL }))
   };
 
 
@@ -77,15 +78,19 @@ export const UploadAvatar = ({ getAvatar, propImage = null, dynamicMargin = -60 
 
     async function convertImgToBlob() {
       if (image) {
-        const blob = await uriToBlob(image);
-        getAvatar(blob)
+        try {
+          const blob = await urlToBlob(image.split("?")[0]);
+          getAvatar(blob)
+        } catch (err) {
+          console.error(err);
+        }
       } else {
         getAvatar(null)
       }
     }
-    if (user) convertImgToBlob()
+    if (photoURL) convertImgToBlob()
 
-  }, [imageBlob, user]);
+  }, [imageBlob, photoURL]);
 
   return (
     <>

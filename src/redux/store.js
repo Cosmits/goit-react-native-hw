@@ -19,6 +19,8 @@ import { devToolsEnhancer } from '@redux-devtools/remote';
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
+  blacklist: ['isLoading']
+  
 };
 
 export const store = configureStore({
